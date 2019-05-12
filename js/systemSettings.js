@@ -3,12 +3,12 @@ var SystemSettings = SystemSettings || {};
 SystemSettings.standardMaterial = new THREE.ShaderMaterial( {
 
     uniforms: {
-        texture:  { type: 't',  value: new THREE.ImageUtils.loadTexture( 'images/blank.png' ) },
+        texture:  { type: 't',  value: new THREE.ImageUtils.loadTexture( 'images/spark.png' ) },
     },
 
     attributes: {
         velocity: { type: 'v3', value: new THREE.Vector3() },
-        color:    { type: 'v4', value: new THREE.Vector3( 0.0, 0.0, 1.0, 1.0 ) },
+        color:    { type: 'v4', value: new THREE.Vector3( 1.0, 0.0, 0.0, 1.0 ) },
         lifetime: { type: 'f', value: 1.0 },
         size:     { type: 'f', value: 1.0 },
     },
@@ -35,11 +35,11 @@ SystemSettings.basic = {
     initializerFunction : SphereInitializer,
     initializerSettings : {
         sphere: new THREE.Vector4 ( 0.0, 0.0, 0.0, 10.0),
-        color:    new THREE.Vector4 ( 1.0, 1.0, 1.0, 1.0 ),
+        color:    new THREE.Vector4 ( 1.0, 0.0, 0.0, 1.0 ),
         velocity: new THREE.Vector3 ( 0.0, 0.0, 0.0),
         damping: new THREE.Vector3 ( 0.0, 0, 0 ), // (linear coeff, quadratic coeff, not in use )
-        lifetime: 7,
-        size:     6.0,
+        lifetime: 6,
+        size:     10.0,
     },
 
     // Update
@@ -53,9 +53,9 @@ SystemSettings.basic = {
     },
 
     // Scene
-    maxParticles :  10000,
-    particlesFreq : 500,
-    //history: 40,
+    maxParticles :  1000,
+    particlesFreq : 1000,
+    history: 40,
     createScene : function () {},
 };
 

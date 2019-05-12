@@ -29,10 +29,23 @@ SphereInitializer.prototype.initializePositions = function ( positions, toSpawn)
         var idx = toSpawn[i];
         // ----------- STUDENT CODE BEGIN ------------
         // for now we just generate a random point in the unit cube; needs to be fixed
-        var pos = new THREE.Vector3( 1.0 - 2.0 * Math.random(),
-                                     1.0 - 2.0 * Math.random(),
-                                     1.0 - 2.0 * Math.random() );
 
+        // Generate random point on the surface of the unit sphere
+        // http://mathworld.wolfram.com/SpherePointPicking.html
+        // @todo: `Math.random() * 2 - 1` picks from [-1, 1). We need (-1, 1)
+        let x1, x2;
+        while (true) {
+            x1 = Math.random() * 2 - 1; x2 = Math.random() * 2 - 1;
+            if (x1 * x1 + x2 * x2 < 1) break;
+        }
+
+        let x1Square = x1 * x1;
+        let x2Square = x2 * x2;
+        var pos = new THREE.Vector3(
+            2.0 * x1 * Math.sqrt(1 - x1Square - x2Square), 
+            2.0 * x2 * Math.sqrt(1 - x1Square - x2Square), 
+            1.0 - 2.0 * (x1Square + x2Square)
+        );
 
         // ----------- STUDENT CODE END ------------
         setElement( idx, positions, pos );
