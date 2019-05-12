@@ -1,14 +1,16 @@
 var SystemSettings = SystemSettings || {};
 
+const ORANGE_VEC4 = new THREE.Vector4(1.0, 0.647, 0.0, 1.0);
+
 SystemSettings.standardMaterial = new THREE.ShaderMaterial( {
 
     uniforms: {
-        texture:  { type: 't',  value: new THREE.ImageUtils.loadTexture( 'images/blank.png' ) },
+        texture:  { type: 't',  value: new THREE.ImageUtils.loadTexture( 'images/spark.png' ) },
     },
 
     attributes: {
         velocity: { type: 'v3', value: new THREE.Vector3() },
-        color:    { type: 'v4', value: new THREE.Vector3( 0.0, 0.0, 1.0, 1.0 ) },
+        color:    { type: 'v4', value: new THREE.Vector3( 1.0, 0.0, 0.0, 1.0 ) },
         lifetime: { type: 'f', value: 1.0 },
         size:     { type: 'f', value: 1.0 },
     },
@@ -35,11 +37,11 @@ SystemSettings.basic = {
     initializerFunction : SphereInitializer,
     initializerSettings : {
         sphere: new THREE.Vector4 ( 0.0, 0.0, 0.0, 10.0),
-        color:    new THREE.Vector4 ( 1.0, 1.0, 1.0, 1.0 ),
+        color: ORANGE_VEC4,
         velocity: new THREE.Vector3 ( 0.0, 0.0, 0.0),
         damping: new THREE.Vector3 ( 0.0, 0, 0 ), // (linear coeff, quadratic coeff, not in use )
-        lifetime: 7,
-        size:     6.0,
+        lifetime: 6,
+        size:     10.0,
     },
 
     // Update
@@ -53,9 +55,9 @@ SystemSettings.basic = {
     },
 
     // Scene
-    maxParticles :  10000,
-    particlesFreq : 500,
-    //history: 40,
+    maxParticles :  1000,
+    particlesFreq : 1000,
+    history: 40,
     createScene : function () {},
 };
 
@@ -120,7 +122,7 @@ SystemSettings.fountainBounce = {
     initializerFunction : FountainInitializer,
     initializerSettings : {
         sphere:   new THREE.Vector4 ( 0.0, 30.0, 0.0, 1.0 ),
-        color:    new THREE.Vector4 ( 0.0, 0.0, 1.0, 1.0 ),
+        color: ORANGE_VEC4,
         velocity: new THREE.Vector3 ( 0.0, 30.0, 0.0),
         damping: new THREE.Vector3 ( 0.0, 0, 0 ),
         lifetime: 7,
@@ -378,22 +380,49 @@ SystemSettings.cloth = {
 // My System
 ////////////////////////////////////////////////////////////////////////////////
 
+function genericPlaneScene() {
+    var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
+    var phong     = new THREE.MeshPhongMaterial( {color: 0x444444, emissive: 0x222222, side: THREE.DoubleSide } );
+
+    var plane     = new THREE.Mesh( plane_geo, phong );
+
+    plane.rotation.x = -1.57;
+    plane.position.y = 0;
+
+    Scene.addObject( plane );
+}
+
 SystemSettings.mySystem = {
 
     // Particle Material
     particleMaterial :  SystemSettings.standardMaterial,
 
     // Initializer
-    initializerFunction : VoidInitializer,
-    initializerSettings : {},
+    initializerFunction : BasicFireworksInitializer,
+    initializerSettings : {
+        sphere:   new THREE.Vector4 ( 0.0, 100.0, 0.0, 1.0 ),
+        color: ORANGE_VEC4,
+        velocity: new THREE.Vector3 ( 0.0, 10.0, 0.0),
+        damping: new THREE.Vector3 ( 0.0, 0, 0 ),
+        lifetime: 7,
+        size: 5.0,
+    },
 
     // Updater
-    updaterFunction : VoidUpdater,
-    updaterSettings : {},
+    updaterFunction : BasicFireworksUpdater,
+    updaterSettings : {
+        externalForces : {
+            gravity :     new THREE.Vector3( 0, 0, 0),
+            attractors : [],
+        },
+        collidables: {},
+        originalLifetime: 7,
+        explodePosition: new THREE.Vector3(0, 52.5, 0)
+    },
 
     // Scene
-    maxParticles:  1000,
-    particlesFreq: 1000,
-    createScene : function () {},
+    maxParticles:  5000, // Ugly hack. To create a ball-like group of particles, set freq to x10
+    particlesFreq: 100000,
+    createScene : genericPlaneScene,
 
 };
