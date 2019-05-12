@@ -312,13 +312,13 @@ ClothUpdater.prototype.update = function ( particleAttributes, alive, delta_t, w
 // Euler updater
 ////////////////////////////////////////////////////////////////////////////////
 
-function EulerUpdater ( opts ) {
+function BasicFireworksUpdater ( opts ) {
     this._opts = opts;
     return this;
 };
 
 
-EulerUpdater.prototype.updatePositions = function ( particleAttributes, alive, delta_t ) {
+BasicFireworksUpdater.prototype.updatePositions = function ( particleAttributes, alive, delta_t ) {
     var positions  = particleAttributes.position;
     var velocities = particleAttributes.velocity;
 
@@ -331,19 +331,33 @@ EulerUpdater.prototype.updatePositions = function ( particleAttributes, alive, d
     }
 };
 
-EulerUpdater.prototype.updateVelocities = function ( particleAttributes, alive, delta_t ) {
+BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes, alive, delta_t ) {
     var positions = particleAttributes.position;
     var velocities = particleAttributes.velocity;
     var gravity = this._opts.externalForces.gravity;
     var attractors = this._opts.externalForces.attractors;
     var dampenings = particleAttributes.dampening;
+    var lifetimes     = particleAttributes.lifetime;
+    let explodeHalflife = this._opts.originalLifetime / 4.0;
+    var explodePosition = this._opts.explodePosition;
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
         // ----------- STUDENT CODE BEGIN ------------
         var p = getElement( i, positions );
         var v = getElement( i, velocities );
+        let l = getElement(i, lifetimes);
         // now update velocity based on forces...
+
+        // Detonate the fireworks at a certain lifetime
+        if (l > explodeHalflife && l - explodeHalflife <= 2 * delta_t) {
+            v = new THREE.Vector3(
+                explodePosition.x - p.x, 
+                explodePosition.y - p.y, 
+                explodePosition.z - p.z
+            );
+            v.multiplyScalar(10);
+        }
 
         setElement( i, velocities, v );
         // ----------- STUDENT CODE END ------------
@@ -351,7 +365,7 @@ EulerUpdater.prototype.updateVelocities = function ( particleAttributes, alive, 
 
 };
 
-EulerUpdater.prototype.updateColors = function ( particleAttributes, alive, delta_t ) {
+BasicFireworksUpdater.prototype.updateColors = function ( particleAttributes, alive, delta_t ) {
     var colors    = particleAttributes.color;
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
@@ -365,7 +379,7 @@ EulerUpdater.prototype.updateColors = function ( particleAttributes, alive, delt
     }
 };
 
-EulerUpdater.prototype.updateSizes= function ( particleAttributes, alive, delta_t ) {
+BasicFireworksUpdater.prototype.updateSizes= function ( particleAttributes, alive, delta_t ) {
     var sizes    = particleAttributes.size;
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
@@ -380,7 +394,7 @@ EulerUpdater.prototype.updateSizes= function ( particleAttributes, alive, delta_
 
 };
 
-EulerUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, delta_t) {
+BasicFireworksUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, delta_t) {
     var positions     = particleAttributes.position;
     var lifetimes     = particleAttributes.lifetime;
 
@@ -399,7 +413,7 @@ EulerUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, d
 
 };
 
-EulerUpdater.prototype.collisions = function ( particleAttributes, alive, delta_t ) {
+BasicFireworksUpdater.prototype.collisions = function ( particleAttributes, alive, delta_t ) {
     if ( !this._opts.collidables ) {
         return;
     }
@@ -425,7 +439,7 @@ EulerUpdater.prototype.collisions = function ( particleAttributes, alive, delta_
     }
 };
 
-EulerUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
+BasicFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
 
     this.updateLifetimes( particleAttributes, alive, delta_t );
     this.updateVelocities( particleAttributes, alive, delta_t );

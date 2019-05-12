@@ -389,27 +389,29 @@ SystemSettings.mySystem = {
     // Initializer
     initializerFunction : BasicFireworksInitializer,
     initializerSettings : {
-        sphere:   new THREE.Vector4 ( 0.0, 30.0, 0.0, 1.0 ),
+        sphere:   new THREE.Vector4 ( 0.0, 100.0, 0.0, 1.0 ),
         color: ORANGE_VEC4,
-        velocity: new THREE.Vector3 ( 0.0, 20.0, 0.0),
+        velocity: new THREE.Vector3 ( 0.0, 10.0, 0.0),
         damping: new THREE.Vector3 ( 0.0, 0, 0 ),
         lifetime: 7,
         size: 5.0,
     },
 
     // Updater
-    updaterFunction : EulerUpdater,
+    updaterFunction : BasicFireworksUpdater,
     updaterSettings : {
         externalForces : {
             gravity :     new THREE.Vector3( 0, 0, 0),
             attractors : [],
         },
         collidables: {},
+        originalLifetime: 7,
+        explodePosition: new THREE.Vector3(0, 52.5, 0)
     },
 
     // Scene
     maxParticles:  5000, // Ugly hack. To create a ball-like group of particles, set freq to x10
-    particlesFreq: 50000,
+    particlesFreq: 100000,
     createScene : genericPlaneScene,
 
 };
