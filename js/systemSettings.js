@@ -1,5 +1,7 @@
 var SystemSettings = SystemSettings || {};
 
+const ORANGE_VEC4 = new THREE.Vector4(1.0, 0.647, 0.0, 1.0);
+
 SystemSettings.standardMaterial = new THREE.ShaderMaterial( {
 
     uniforms: {
@@ -35,7 +37,7 @@ SystemSettings.basic = {
     initializerFunction : SphereInitializer,
     initializerSettings : {
         sphere: new THREE.Vector4 ( 0.0, 0.0, 0.0, 10.0),
-        color:    new THREE.Vector4 ( 1.0, 0.0, 0.0, 1.0 ),
+        color: ORANGE_VEC4,
         velocity: new THREE.Vector3 ( 0.0, 0.0, 0.0),
         damping: new THREE.Vector3 ( 0.0, 0, 0 ), // (linear coeff, quadratic coeff, not in use )
         lifetime: 6,
@@ -120,7 +122,7 @@ SystemSettings.fountainBounce = {
     initializerFunction : FountainInitializer,
     initializerSettings : {
         sphere:   new THREE.Vector4 ( 0.0, 30.0, 0.0, 1.0 ),
-        color:    new THREE.Vector4 ( 0.0, 0.0, 1.0, 1.0 ),
+        color: ORANGE_VEC4,
         velocity: new THREE.Vector3 ( 0.0, 30.0, 0.0),
         damping: new THREE.Vector3 ( 0.0, 0, 0 ),
         lifetime: 7,
@@ -147,7 +149,7 @@ SystemSettings.fountainBounce = {
         var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
         var phong     = new THREE.MeshPhongMaterial( {color: 0x444444, emissive: 0x222222, side: THREE.DoubleSide } );
 
-        var box_geo   = new THREE.BoxGeometry(10,30,10)
+        var box_geo   = new THREE.BoxGeometry(10, 30, 10);
 
         var plane     = new THREE.Mesh( plane_geo, phong );
         var box       = new THREE.Mesh( box_geo, phong );
@@ -367,22 +369,47 @@ SystemSettings.cloth = {
 // My System
 ////////////////////////////////////////////////////////////////////////////////
 
+function genericPlaneScene() {
+    var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
+    var phong     = new THREE.MeshPhongMaterial( {color: 0x444444, emissive: 0x222222, side: THREE.DoubleSide } );
+
+    var plane     = new THREE.Mesh( plane_geo, phong );
+
+    plane.rotation.x = -1.57;
+    plane.position.y = 0;
+
+    Scene.addObject( plane );
+}
+
 SystemSettings.mySystem = {
 
     // Particle Material
     particleMaterial :  SystemSettings.standardMaterial,
 
     // Initializer
-    initializerFunction : VoidInitializer,
-    initializerSettings : {},
+    initializerFunction : BasicFireworksInitializer,
+    initializerSettings : {
+        sphere:   new THREE.Vector4 ( 0.0, 30.0, 0.0, 1.0 ),
+        color: ORANGE_VEC4,
+        velocity: new THREE.Vector3 ( 0.0, 20.0, 0.0),
+        damping: new THREE.Vector3 ( 0.0, 0, 0 ),
+        lifetime: 7,
+        size: 5.0,
+    },
 
     // Updater
-    updaterFunction : VoidUpdater,
-    updaterSettings : {},
+    updaterFunction : EulerUpdater,
+    updaterSettings : {
+        externalForces : {
+            gravity :     new THREE.Vector3( 0, 0, 0),
+            attractors : [],
+        },
+        collidables: {},
+    },
 
     // Scene
-    maxParticles:  1000,
-    particlesFreq: 1000,
-    createScene : function () {},
+    maxParticles:  5000, // Ugly hack. To create a ball-like group of particles, set freq to x10
+    particlesFreq: 50000,
+    createScene : genericPlaneScene,
 
 };

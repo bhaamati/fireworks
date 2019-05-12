@@ -21,6 +21,28 @@ function SphereInitializer ( opts ) {
     return this;
 };
 
+/**
+ * Generate a random point on the surface of the unit sphere
+ * http://mathworld.wolfram.com/SpherePointPicking.html
+ * @todo: `Math.random() * 2 - 1` picks from [-1, 1). We need (-1, 1)
+ * @returns THREE.Vector3
+ */
+function getRandomPointOnUnitSphere() {
+    let x1, x2;
+    while (true) {
+        x1 = Math.random() * 2 - 1; x2 = Math.random() * 2 - 1;
+        if (x1 * x1 + x2 * x2 < 1) break;
+    }
+
+    let x1Square = x1 * x1;
+    let x2Square = x2 * x2;
+    return new THREE.Vector3(
+        2.0 * x1 * Math.sqrt(1 - x1Square - x2Square), 
+        2.0 * x2 * Math.sqrt(1 - x1Square - x2Square), 
+        1.0 - 2.0 * (x1Square + x2Square)
+    );
+}
+
 SphereInitializer.prototype.initializePositions = function ( positions, toSpawn) {
     var base = this._opts.sphere;
     var base_pos = new THREE.Vector3( base.x, base.y, base.z );
@@ -30,22 +52,7 @@ SphereInitializer.prototype.initializePositions = function ( positions, toSpawn)
         // ----------- STUDENT CODE BEGIN ------------
         // for now we just generate a random point in the unit cube; needs to be fixed
 
-        // Generate random point on the surface of the unit sphere
-        // http://mathworld.wolfram.com/SpherePointPicking.html
-        // @todo: `Math.random() * 2 - 1` picks from [-1, 1). We need (-1, 1)
-        let x1, x2;
-        while (true) {
-            x1 = Math.random() * 2 - 1; x2 = Math.random() * 2 - 1;
-            if (x1 * x1 + x2 * x2 < 1) break;
-        }
-
-        let x1Square = x1 * x1;
-        let x2Square = x2 * x2;
-        var pos = new THREE.Vector3(
-            2.0 * x1 * Math.sqrt(1 - x1Square - x2Square), 
-            2.0 * x2 * Math.sqrt(1 - x1Square - x2Square), 
-            1.0 - 2.0 * (x1Square + x2Square)
-        );
+        var pos = getRandomPointOnUnitSphere();
 
         // ----------- STUDENT CODE END ------------
         setElement( idx, positions, pos );
@@ -436,4 +443,92 @@ ClothInitializer.prototype.initialize = function ( particleAttributes, toSpawn, 
     // mark normals to be updated
     particleAttributes["normal"].needsUpdate = true;
 
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Basic Fireworks Initializer
+////////////////////////////////////////////////////////////////////////////////
+
+function BasicFireworksInitializer ( opts ) {
+    this._opts = opts;
+    return this;
+};
+
+/**
+ * @description Generate a spherical ball of particles at the base
+ */
+BasicFireworksInitializer.prototype.initializePositions = function ( positions, toSpawn) {
+    var base = this._opts.sphere;
+    var base_pos = new THREE.Vector3( base.x, base.y, base.z );
+    var r   = base.w;
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        setElement( idx, positions, getRandomPointOnUnitSphere() );
+    }
+    positions.needUpdate = true;
+};
+
+BasicFireworksInitializer.prototype.initializeVelocities = function ( velocities, dampenings, positions, toSpawn ) {
+    var base_vel = this._opts.velocity;
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        // ----------- STUDENT CODE BEGIN ------------
+        var vel = base_vel;
+        // ----------- STUDENT CODE END ------------
+        setElement( idx, velocities, vel );
+        var damp = new THREE.Vector3(this._opts.damping.x,this._opts.damping.y,0);
+        setElement( idx, dampenings, damp); 
+
+    }
+    velocities.needUpdate = true;
+}
+
+BasicFireworksInitializer.prototype.initializeColors = function ( colors, toSpawn ) {
+    var base_col = this._opts.color;
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        // ----------- STUDENT CODE BEGIN ------------
+        var col = base_col;
+        // ----------- STUDENT CODE END ------------
+        setElement( idx, colors, col );
+    }
+    colors.needUpdate = true;
+}
+
+BasicFireworksInitializer.prototype.initializeSizes = function ( sizes, toSpawn ) {
+
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        // ----------- STUDENT CODE BEGIN ------------
+        var size = this._opts.size;
+        // ----------- STUDENT CODE END ------------
+        setElement( idx, sizes, size );
+    }
+    sizes.needUpdate = true;
+}
+
+BasicFireworksInitializer.prototype.initializeLifetimes = function ( lifetimes, toSpawn ) {
+
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        var lifetime = this._opts.lifetime;
+        setElement( idx, lifetimes, lifetime );
+    }
+    lifetimes.needUpdate = true;
+}
+
+// how to make this funciton nicer to work with. This one is kinda ok, as for initialization
+// everything is independent
+BasicFireworksInitializer.prototype.initialize = function ( particleAttributes, toSpawn ) {
+
+    // update required values
+    this.initializePositions( particleAttributes.position, toSpawn );
+
+    this.initializeVelocities( particleAttributes.velocity,  particleAttributes.dampening, particleAttributes.position, toSpawn );
+
+    this.initializeColors( particleAttributes.color, toSpawn );
+
+    this.initializeLifetimes( particleAttributes.lifetime, toSpawn );
+
+    this.initializeSizes( particleAttributes.size, toSpawn );
 };
