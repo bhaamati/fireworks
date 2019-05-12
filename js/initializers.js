@@ -131,11 +131,12 @@ FountainInitializer.prototype.initializePositions = function ( positions, toSpaw
     for ( var i = 0 ; i < toSpawn.length ; ++i ) {
         var idx = toSpawn[i];
         // ----------- STUDENT CODE BEGIN ------------
-
-        var pos = new THREE.Vector3( 1.0 - 2.0 * Math.random(),
-                                     1.0 - 2.0 * Math.random(),
-                                     1.0 - 2.0 * Math.random() );
-
+        //debugger;
+        var pos = new THREE.Vector3( 1.0 - 2.0 * Math.random() + Renderer._clickPos.x,
+                                     1.0 - 2.0 * Math.random() + Renderer._clickPos.y,
+                                     1.0 - 2.0 * Math.random() + Renderer._clickPos.z 
+                                     );
+        
         // ----------- STUDENT CODE END ------------
         setElement( idx, positions, pos );
 

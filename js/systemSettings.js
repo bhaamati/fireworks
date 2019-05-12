@@ -146,18 +146,29 @@ SystemSettings.fountainBounce = {
     createScene : function () {
         var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
         var phong     = new THREE.MeshPhongMaterial( {color: 0x444444, emissive: 0x222222, side: THREE.DoubleSide } );
-
-        var box_geo   = new THREE.BoxGeometry(10,30,10)
-
         var plane     = new THREE.Mesh( plane_geo, phong );
-        var box       = new THREE.Mesh( box_geo, phong );
-        box.position.set( 0.0, 15.0, 0.0 );
-
         plane.rotation.x = -1.57;
         plane.position.y = 0;
-
         Scene.addObject( plane );
+
+        var box_geo   = new THREE.BoxGeometry(10,30,10);
+        var box       = new THREE.Mesh( box_geo, phong);
+        box.position.set( 0.0, 15.0, 0.0 );
         Scene.addObject( box );
+
+        var plane_geo_horiz = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
+        var material_horiz = new THREE.MeshBasicMaterial( {color: 0xFF0000, alphaTest:0, visible: false } );
+        var plane_horiz     = new THREE.Mesh( plane_geo_horiz, material_horiz);
+        Scene.addObject( plane_horiz );
+
+        
+        
+        // plane_horiz.rotation.y = -1.57;
+        // plane_horiz.position.x = 0;
+
+        
+        
+        
     },
 };
 

@@ -13,7 +13,7 @@ var Renderer = Renderer || {
     _width      : undefined,
     _height     : undefined,
     _aspect     : undefined,
-
+    _clickPos   : undefined,
 };
 
 Renderer.getDims = function() {
@@ -42,7 +42,7 @@ Renderer.create = function( scene, canvas ) {
     // Renderer._renderer.autoClear = false;
     window.addEventListener( "resize",    Renderer.onWindowResize, false );
     canvas.addEventListener( "mouseup",   Renderer.onMouseUp,      false );
-    canvas.addEventListener( "mousedown", Renderer.onMouseDown,    false );
+    canvas.addEventListener( "mousedown", Renderer.onClick,    false );
 
     document.body.appendChild( Renderer._renderer.domElement );
 
@@ -50,7 +50,7 @@ Renderer.create = function( scene, canvas ) {
     Renderer._camera   = new THREE.PerspectiveCamera ( 55, Renderer._aspect, 0.01, 5000 );
     Renderer._controls = new THREE.TrackballControls ( Renderer._camera, Renderer._renderer.domElement );
     Renderer._camera.position.set( 0, 0, 200 );
-
+    Renderer._clickPos = new THREE.Vector3(100,100,100);
 
     // Add rendering stats, so we know the performance
     var container = document.getElementById( "stats" );
@@ -121,3 +121,25 @@ window.addEventListener( 'keyup', function( event ) {
         ParticleEngine.pause();
     }
 });
+
+
+// add event listener that will cause 'I' key to download image
+Renderer.onClick = function( event ) {
+    var vec = new THREE.Vector3(); // create once and reuse
+    var pos = new THREE.Vector3(); // create once and reuse
+    debugger;
+
+    vec.set(
+        ( event.clientX / window.innerWidth ) * 2 - 1,
+        - ( event.clientY / window.innerHeight ) * 2 + 1,
+        0.5 );
+
+    vec.unproject( Renderer._camera );
+
+    vec.sub( Renderer._camera.position ).normalize();
+
+    var distance = - Renderer._camera.position.z / vec.z;
+
+    pos.copy( Renderer._camera.position ).add( vec.multiplyScalar( distance ) );
+    Renderer._clickPos = pos;
+};
