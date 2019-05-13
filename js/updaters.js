@@ -190,7 +190,7 @@ EulerUpdater.prototype.collisions = function ( particleAttributes, alive, delta_
 };
 
 EulerUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
-
+    
     this.updateLifetimes( particleAttributes, alive, delta_t );
     this.updateVelocities( particleAttributes, alive, delta_t );
     this.updatePositions( particleAttributes, alive, delta_t );
@@ -339,7 +339,13 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
     var dampenings = particleAttributes.dampening;
     var lifetimes     = particleAttributes.lifetime;
     let explodeHalflife = this._opts.originalLifetime / 4.0;
-    var explodePosition = this._opts.explodePosition;
+    let currentClick = Renderer._clickPos.clone();
+    
+    var explodePosition = new THREE.Vector3(
+        currentClick.x, 
+        currentClick.y, 
+        currentClick.z
+    );
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
@@ -348,14 +354,10 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
         var v = getElement( i, velocities );
         let l = getElement(i, lifetimes);
         // now update velocity based on forces...
-
+        
         // Detonate the fireworks at a certain lifetime
         if (l > explodeHalflife && l - explodeHalflife <= 2 * delta_t) {
-            v = new THREE.Vector3(
-                explodePosition.x - p.x, 
-                explodePosition.y - p.y, 
-                explodePosition.z - p.z
-            );
+            v = getRandomPointOnUnitSphere();
             v.multiplyScalar(10);
         }
 
@@ -440,7 +442,7 @@ BasicFireworksUpdater.prototype.collisions = function ( particleAttributes, aliv
 };
 
 BasicFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
-
+    currentClickPosition = 
     this.updateLifetimes( particleAttributes, alive, delta_t );
     this.updateVelocities( particleAttributes, alive, delta_t );
     this.updatePositions( particleAttributes, alive, delta_t );

@@ -462,6 +462,7 @@ BasicFireworksInitializer.prototype.initializePositions = function ( positions, 
     var base = this._opts.sphere;
     var base_pos = new THREE.Vector3( base.x, base.y, base.z );
     var r   = base.w;
+    
     for ( var i = 0 ; i < toSpawn.length ; ++i ) {
         var idx = toSpawn[i];
         setElement( idx, positions, getRandomPointOnUnitSphere() );
