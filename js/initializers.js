@@ -466,8 +466,16 @@ BasicFireworksInitializer.prototype.initializePositions = function ( positions, 
         var idx = toSpawn[i];
         setElement( idx, positions, getRandomPointOnUnitSphere() );
     }
+    SystemSettings.mySystem.updaterSettings.explodePosition = Renderer._clickPos;
     positions.needUpdate = true;
 };
+
+function getLaunchVelocity(origin, target, lifetime) {
+    let v = target.clone();
+    v.sub(origin);
+    v.multiplyScalar(lifetime * 0.037);
+    return v;
+}
 
 BasicFireworksInitializer.prototype.initializeVelocities = function ( velocities, dampenings, positions, toSpawn ) {
     var base_vel = this._opts.velocity;
@@ -475,6 +483,11 @@ BasicFireworksInitializer.prototype.initializeVelocities = function ( velocities
         var idx = toSpawn[i];
         // ----------- STUDENT CODE BEGIN ------------
         var vel = base_vel;
+        vel = getLaunchVelocity(
+            new THREE.Vector3 (0.0, 0.0, 0.0), 
+            Renderer._clickPos, 
+            7 * 3 / 4
+        ),
         // ----------- STUDENT CODE END ------------
         setElement( idx, velocities, vel );
         var damp = new THREE.Vector3(this._opts.damping.x,this._opts.damping.y,0);

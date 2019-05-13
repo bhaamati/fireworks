@@ -392,6 +392,13 @@ function genericPlaneScene() {
     Scene.addObject( plane );
 }
 
+function getLaunchVelocity(origin, target, lifetime) {
+    let v = target.clone();
+    v.sub(origin);
+    v.multiplyScalar(lifetime * 0.037);
+    return v;
+}
+
 SystemSettings.mySystem = {
 
     // Particle Material
@@ -401,8 +408,14 @@ SystemSettings.mySystem = {
     initializerFunction : BasicFireworksInitializer,
     initializerSettings : {
         sphere:   new THREE.Vector4 ( 0.0, 100.0, 0.0, 1.0 ),
+        origin: new THREE.Vector3 (0.0, 0.0, 0.0),
         color: ORANGE_VEC4,
-        velocity: new THREE.Vector3 ( 0.0, 10.0, 0.0),
+        velocity: new THREE.Vector3 (0.0, 30.0, 0.0), 
+        // getLaunchVelocity(
+        //     new THREE.Vector3 (0.0, 0.0, 0.0), 
+        //     new THREE.Vector3 (50.0, 50.0, 0.0), 
+        //     7 * 3 / 4
+        // ),
         damping: new THREE.Vector3 ( 0.0, 0, 0 ),
         lifetime: 7,
         size: 5.0,
@@ -417,7 +430,7 @@ SystemSettings.mySystem = {
         },
         collidables: {},
         originalLifetime: 7,
-        explodePosition: new THREE.Vector3(0, 52.5, 0)
+        explodePosition: new THREE.Vector3 (50.0, 50.0, 0.0)
     },
 
     // Scene

@@ -50,7 +50,7 @@ Renderer.create = function( scene, canvas ) {
     Renderer._camera   = new THREE.PerspectiveCamera ( 55, Renderer._aspect, 0.01, 5000 );
     Renderer._controls = new THREE.TrackballControls ( Renderer._camera, Renderer._renderer.domElement );
     Renderer._camera.position.set( 0, 0, 200 );
-    Renderer._clickPos = new THREE.Vector3(100,100,100);
+    Renderer._clickPos = new THREE.Vector3(0, 50, 0);
 
     // Add rendering stats, so we know the performance
     var container = document.getElementById( "stats" );
@@ -127,7 +127,6 @@ window.addEventListener( 'keyup', function( event ) {
 Renderer.onClick = function( event ) {
     var vec = new THREE.Vector3(); // create once and reuse
     var pos = new THREE.Vector3(); // create once and reuse
-    debugger;
 
     vec.set(
         ( event.clientX / window.innerWidth ) * 2 - 1,
