@@ -7,7 +7,7 @@
 // TODO :
 // - shader requires more exploration / better interface
 // - change moving particle to setting it invisible in shader
-// - initializers and particle engine must work with all the sahder supported attributes
+// - initializers and particle engine must work with all the shader supported attributes
 // - incorporate gui controls
 
 // Singleton Engine - we will have one particle engine per application,

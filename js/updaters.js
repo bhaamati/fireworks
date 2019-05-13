@@ -339,13 +339,6 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
     var dampenings = particleAttributes.dampening;
     var lifetimes     = particleAttributes.lifetime;
     let explodeHalflife = this._opts.originalLifetime / 4.0;
-    let currentClick = Renderer._clickPos.clone();
-    
-    var explodePosition = new THREE.Vector3(
-        currentClick.x, 
-        currentClick.y, 
-        currentClick.z
-    );
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
@@ -442,7 +435,6 @@ BasicFireworksUpdater.prototype.collisions = function ( particleAttributes, aliv
 };
 
 BasicFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
-    currentClickPosition = 
     this.updateLifetimes( particleAttributes, alive, delta_t );
     this.updateVelocities( particleAttributes, alive, delta_t );
     this.updatePositions( particleAttributes, alive, delta_t );
