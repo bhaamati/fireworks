@@ -121,7 +121,9 @@ function Emitter ( opts ) {
         color:         4,
         size:          1,
         lifetime:      1,
-        dampening:     3
+        dampening:     3,
+        parent:       1, 
+        child:         1
     };
 
     // parse options
@@ -249,7 +251,7 @@ Emitter.prototype.restart = function() {
 
 Emitter.prototype.update = function( delta_t ) {
     // how many particles should we add?
-    var toAdd = Math.floor( delta_t * this._particlesPerSecond );
+    var toAdd = Math.floor( delta_t * this._particlesPerSecond ) * 5;
 
     if ( toAdd > 0 ) {
         this._initializer.initialize ( this._particleAttributes, this.getSpawnable( toAdd ), this._width, this._height );
@@ -259,9 +261,9 @@ Emitter.prototype.update = function( delta_t ) {
     this._updater.update( this._particleAttributes, this._initialized, delta_t, this._width, this._height );
 
     // sorting -> Move it to camera update / loop update so that it is updated each time even if time is paused?
-    if ( this._sorting === true ) {
-        this.sortParticles();
-    }
+    // if ( this._sorting === true ) {
+    //     this.sortParticles();
+    // }
 
     // for visibility culling
     this._drawableParticles.geometry.computeBoundingSphere();

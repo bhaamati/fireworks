@@ -458,19 +458,42 @@ function BasicFireworksInitializer ( opts ) {
 /**
  * @description Generate a spherical ball of particles at the base
  */
-BasicFireworksInitializer.prototype.initializePositions = function ( positions, toSpawn) {
+BasicFireworksInitializer.prototype.initializePositions = function ( positions, toSpawn, parent, child) {
     var base = this._opts.sphere;
     var base_pos = new THREE.Vector3( base.x, base.y, base.z );
     var r   = base.w;
     
-    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+    for ( var i = 0 ; i < toSpawn.length/5 ; ++i ) {
         var idx = toSpawn[i];
         setElement( idx, positions, getRandomPointOnUnitSphere() );
     }
+    
+
+    for ( var i = 0 ; i < toSpawn.length/5 ; ++i ) {
+        var idx = toSpawn[i];
+        let childIdx = toSpawn[toSpawn.length/5 + i * 4];
+
+        var parentPos = getElement( idx, positions );
+        
+        setElement( idx, parent, -1);
+        setElement( idx, child, childIdx);
+        
+        for ( var j = childIdx; j < (childIdx + 4) ; ++j ) {
+            curIdx = toSpawn[j]; 
+            setElement( curIdx, parent, idx);
+            idx = toSpawn[j]; 
+            childIdx = toSpawn[j + 1];
+            setElement( idx, child, childIdx);
+            setElement( idx, positions, parentPos);
+        }
+        idx = toSpawn[j - 1];
+        setElement( idx, child, -1);
+    }
+
     SystemSettings.mySystem.updaterSettings.explodePosition = Renderer._clickPos;
     positions.needUpdate = true;
+    debugger;
 };
-
 function getLaunchVelocity(origin, target, lifetime) {
     let v = target.clone();
     v.sub(origin);
@@ -489,6 +512,7 @@ BasicFireworksInitializer.prototype.initializeVelocities = function ( velocities
             Renderer._clickPos, 
             7 * 3 / 4
         ),
+
         // ----------- STUDENT CODE END ------------
         setElement( idx, velocities, vel );
         var damp = new THREE.Vector3(this._opts.damping.x,this._opts.damping.y,0);
@@ -502,11 +526,15 @@ BasicFireworksInitializer.prototype.initializeColors = function ( colors, toSpaw
     var base_col = this._opts.color;
     for ( var i = 0 ; i < toSpawn.length ; ++i ) {
         var idx = toSpawn[i];
-        // ----------- STUDENT CODE BEGIN ------------
-        var col = base_col;
-        // ----------- STUDENT CODE END ------------
+        if (i <= toSpawn.length/5) {
+            var col = base_col;
+        } else {
+            var col = new THREE.Vector4(1.0, 1.1, 0.0, 0.5);
+        }
         setElement( idx, colors, col );
     }
+
+    
     colors.needUpdate = true;
 }
 
@@ -537,7 +565,7 @@ BasicFireworksInitializer.prototype.initializeLifetimes = function ( lifetimes, 
 BasicFireworksInitializer.prototype.initialize = function ( particleAttributes, toSpawn ) {
 
     // update required values
-    this.initializePositions( particleAttributes.position, toSpawn );
+    this.initializePositions( particleAttributes.position, toSpawn, particleAttributes.parent, particleAttributes.child );
 
     this.initializeVelocities( particleAttributes.velocity,  particleAttributes.dampening, particleAttributes.position, toSpawn );
 

@@ -13,6 +13,7 @@ Gui.particleSystems = [ "basic", "oscilator", "fountainBounce", "fountainSink", 
 
 Gui.textures = [ "blank", "base", "fire", "smoke", "spark", "sphere", "smoke" ];
 
+Gui.fireworkTypes = [ "basic", "strobe", "fallingEmbers", "comets" ];
 
 // due to a bug in dat GUI we need to initialize floats to non-interger values (like 0.5)
 // (the variable Gui.defaults below then carries their default values, which we set later)
@@ -27,6 +28,7 @@ Gui.values = {
     depthTest:   true,
     transparent: true,
     sorting:     true,
+    fireworkTypes: function(){},
 };
 
 // defaults only hold actual mesh modifiers, no display
@@ -78,6 +80,7 @@ Gui.init = function ( meshChangeCallback, controlsChangeCallback, displayChangeC
     var disp = gui.addFolder( "DISPLAY OPTIONS");
     gc.blends    = disp.add( Gui.values, 'blendTypes', Gui.blendTypes ).name("Blending Types");
     gc.textures  = disp.add( Gui.values, 'textures', Gui.textures ).name("Textures");
+    gc.fireworkTypes  = disp.add( Gui.values, 'fireworkTypes', Gui.textures ).name("Firework Types");
     gc.depthTest = disp.add( Gui.values, 'depthTest' ).name("Depth Test");
     gc.transp    = disp.add( Gui.values, 'transparent' ).name("Transparent");
     gc.sort      = disp.add( Gui.values, 'sorting' ).name("Sorting");
