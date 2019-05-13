@@ -486,7 +486,7 @@ BasicFireworksInitializer.prototype.initializeVelocities = function ( velocities
         var vel = base_vel;
         vel = getLaunchVelocity(
             new THREE.Vector3 (0.0, 0.0, 0.0), 
-            Renderer._clickPos, 
+            this._opts.targetPosition, 
             7 * 3 / 4
         ),
         // ----------- STUDENT CODE END ------------
@@ -535,7 +535,6 @@ BasicFireworksInitializer.prototype.initializeLifetimes = function ( lifetimes, 
 // how to make this funciton nicer to work with. This one is kinda ok, as for initialization
 // everything is independent
 BasicFireworksInitializer.prototype.initialize = function ( particleAttributes, toSpawn ) {
-
     // update required values
     this.initializePositions( particleAttributes.position, toSpawn );
 

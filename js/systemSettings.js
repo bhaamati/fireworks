@@ -392,50 +392,50 @@ function genericPlaneScene() {
     Scene.addObject( plane );
 }
 
-function getLaunchVelocity(origin, target, lifetime) {
-    let v = target.clone();
-    v.sub(origin);
-    v.multiplyScalar(lifetime * 0.037);
-    return v;
+/**
+ * @description Return a JSON object that can be used to configure a fireworks 
+ * particle system. Having a function ensures that repeated initializations of 
+ * a fireworks particle system use independent JSON objects. Cloning objects is 
+ * too much hustle :-)
+ */
+function generateGenericSystemConfig() {
+    return {
+
+        // Particle Material
+        particleMaterial :  SystemSettings.standardMaterial,
+    
+        // Initializer
+        initializerFunction : BasicFireworksInitializer,
+        initializerSettings : {
+            sphere:   new THREE.Vector4 ( 0.0, 100.0, 0.0, 1.0 ),
+            origin: new THREE.Vector3 (0.0, 0.0, 0.0),
+            color: ORANGE_VEC4,
+            velocity: new THREE.Vector3 (0.0, 30.0, 0.0), 
+            targetPosition: new THREE.Vector3 (50.0, 50.0, 0.0),
+            damping: new THREE.Vector3 ( 0.0, 0, 0 ),
+            lifetime: 7,
+            size: 5.0,
+        },
+    
+        // Updater
+        updaterFunction : BasicFireworksUpdater,
+        updaterSettings : {
+            externalForces : {
+                gravity :     new THREE.Vector3( 0, 0, 0),
+                attractors : [],
+            },
+            collidables: {},
+            targetPosition: new THREE.Vector3 (50.0, 50.0, 0.0),
+            originalLifetime: 7,
+            explodePosition: new THREE.Vector3 (50.0, 50.0, 0.0)
+        },
+    
+        // Scene
+        maxParticles:  5000, // Ugly hack. To create a ball-like group of particles, set freq to x10
+        particlesFreq: 100000,
+        createScene : genericPlaneScene,
+    
+    };
 }
 
-SystemSettings.mySystem = {
-
-    // Particle Material
-    particleMaterial :  SystemSettings.standardMaterial,
-
-    // Initializer
-    initializerFunction : BasicFireworksInitializer,
-    initializerSettings : {
-        sphere:   new THREE.Vector4 ( 0.0, 100.0, 0.0, 1.0 ),
-        origin: new THREE.Vector3 (0.0, 0.0, 0.0),
-        color: ORANGE_VEC4,
-        velocity: new THREE.Vector3 (0.0, 30.0, 0.0), 
-        // getLaunchVelocity(
-        //     new THREE.Vector3 (0.0, 0.0, 0.0), 
-        //     new THREE.Vector3 (50.0, 50.0, 0.0), 
-        //     7 * 3 / 4
-        // ),
-        damping: new THREE.Vector3 ( 0.0, 0, 0 ),
-        lifetime: 7,
-        size: 5.0,
-    },
-
-    // Updater
-    updaterFunction : BasicFireworksUpdater,
-    updaterSettings : {
-        externalForces : {
-            gravity :     new THREE.Vector3( 0, 0, 0),
-            attractors : [],
-        },
-        collidables: {},
-        originalLifetime: 7,
-        explodePosition: new THREE.Vector3 (50.0, 50.0, 0.0)
-    },
-
-    // Scene
-    maxParticles:  5000, // Ugly hack. To create a ball-like group of particles, set freq to x10
-    particlesFreq: 100000,
-    createScene : genericPlaneScene,
-
-};
+SystemSettings.mySystem = generateGenericSystemConfig();
