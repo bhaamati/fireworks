@@ -391,18 +391,19 @@ function genericPlaneScene() {
     plane.rotation.x = -1.57;
     plane.position.y = 0;
 
-    Scene.addObject( plane );
+    // Scene.addObject( plane );
 
+    // instantiate a loader
     var loader = new THREE.CubeTextureLoader();
-    loader.setPath( 'textures/cube_maps/ame_nebula/' );
+    loader.setPath( 'textures/cube_maps/darkcity/' );
 
     var texture = loader.load([
-        'purplenebula_bk.tga',
-        'purplenebula_dn.tga',
-        'purplenebula_ft.tga',
-        'purplenebula_lf.tga',
-        'purplenebula_rt.tga',
-        'purplenebula_up.tga'
+        'darkcity_bk.jpg',
+        'darkcity_dn.jpg',
+        'darkcity_ft.jpg',
+        'darkcity_lf.jpg',
+        'darkcity_rt.jpg',
+        'darkcity_up.jpg'
     ]);
     Scene._scene.background = texture;
 }
