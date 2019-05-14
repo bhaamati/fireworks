@@ -63,6 +63,21 @@ Renderer.create = function( scene, canvas ) {
     // make sure renderer is aware of the scene it is rendering
     Renderer._scene = scene._scene;
 
+    // create a global audio source
+    var listener = new THREE.AudioListener();
+    Renderer._camera.add( listener );
+    var sound = new THREE.Audio( listener );
+    Renderer._sound = sound;
+    // load a sound and set it as the Audio object's buffer
+    var audioLoader = new THREE.AudioLoader();
+    audioLoader.load( 'sounds/firework_boom.wav', function( buffer ) {
+        sound.setBuffer( buffer );
+        sound.setLoop( true );
+        sound.setVolume( 0.5 );
+        // sound.play();
+    });
+    Renderer._sound = sound;
+
     // create raycaster
     Renderer._mouse = new THREE.Vector2;
     Renderer._raycaster = new THREE.Raycaster();

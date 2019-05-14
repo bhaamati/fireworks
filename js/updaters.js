@@ -340,6 +340,12 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
     var lifetimes     = particleAttributes.lifetime;
     let explodeLifetime = this._opts.explodeLifetime;
 
+    let life = getElement(0, lifetimes);
+    if (life > explodeLifetime && life - explodeLifetime <= 2 * delta_t) {
+        Renderer._sound.play();
+    }
+
+
     for ( var i = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
         // ----------- STUDENT CODE BEGIN ------------
