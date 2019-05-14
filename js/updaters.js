@@ -376,13 +376,14 @@ BasicFireworksUpdater.prototype.updateColors = function ( particleAttributes, al
     for ( var i = 0 ; i < alive.length ; ++i ) {
 
         if ( !alive[i] ) continue;
-        //let c = getElement( i, colors );
+        let c = getElement( i, colors );
         let l = getElement(i, lifetimes);
-        c = new THREE.Vector4(1, 1, 1, 1);
         if (l < explodeLifetime) {
-            // c = baseColor.clone();
-            // c.multiplyScalar(brightnessFactor);
-            c = new THREE.Vector4(1, 1, 1, 1);
+            c = baseColor.clone();
+            c.multiplyScalar(brightnessFactor * (l / explodeLifetime));
+            c.clampScalar(0, 1);
+        } else {
+            c.w = 1; // Make the fireworks transparent before going kaboom!
         }
         setElement( i, colors, c );
     }
@@ -453,16 +454,16 @@ BasicFireworksUpdater.prototype.update = function ( particleAttributes, alive, d
     this.updateVelocities( particleAttributes, alive, delta_t );
     this.updatePositions( particleAttributes, alive, delta_t );
 
-    this.collisions( particleAttributes, alive, delta_t );
+    // this.collisions( particleAttributes, alive, delta_t );
 
     this.updateColors( particleAttributes, alive, delta_t );
-    this.updateSizes( particleAttributes, alive, delta_t );
+    // this.updateSizes( particleAttributes, alive, delta_t );
 
     // tell webGL these were updated
     particleAttributes.position.needsUpdate = true;
     particleAttributes.color.needsUpdate = true;
     particleAttributes.velocity.needsUpdate = true;
     particleAttributes.lifetime.needsUpdate = true;
-    particleAttributes.size.needsUpdate = true;
+    // particleAttributes.size.needsUpdate = true;
 
-}
+};

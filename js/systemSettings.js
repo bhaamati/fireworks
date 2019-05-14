@@ -409,11 +409,11 @@ function generateGenericSystemConfig() {
         initializerSettings : {
             sphere:   new THREE.Vector4 ( 0.0, 100.0, 0.0, 1.0 ),
             origin: new THREE.Vector3 (0.0, 0.0, 0.0),
-            color: ORANGE_VEC4,
+            color: new THREE.Vector4(142/255, 41/255, 219/255, 1.0),
             velocity: new THREE.Vector3 (0.0, 30.0, 0.0), 
-            targetPosition: new THREE.Vector3 (50.0, 50.0, 0.0),
+            targetPosition: new THREE.Vector3 (0.0, 30.0, 0.0),
             damping: new THREE.Vector3 ( 0.0, 0, 0 ),
-            lifetime: 10,
+            lifetime: 7,
             size: 5.0,
         },
     
@@ -425,11 +425,11 @@ function generateGenericSystemConfig() {
                 attractors : [],
             },
             collidables: {},
-            targetPosition: new THREE.Vector3 (50.0, 50.0, 0.0),
+            targetPosition: new THREE.Vector3 (0.0, 30.0, 0.0),
             originalLifetime: 7,
             explodeLifetime: 7 / 4.0,
-            explodePosition: new THREE.Vector3 (50.0, 50.0, 0.0),
-            originalColor: ORANGE_VEC4
+            explodePosition: new THREE.Vector3 (0.0, 30.0, 0.0),
+            originalColor: new THREE.Vector4(142/255, 41/255, 219/255, 1.0)
         },
     
         // Scene
