@@ -381,15 +381,30 @@ SystemSettings.cloth = {
 ////////////////////////////////////////////////////////////////////////////////
 
 function genericPlaneScene() {
+
     var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
-    var phong     = new THREE.MeshPhongMaterial( {color: 0x444444, emissive: 0x222222, side: THREE.DoubleSide } );
+    var phong     = new THREE.MeshPhongMaterial({
+        color: 0x444444, emissive: 0x222222, side: THREE.DoubleSide
+    });
 
     var plane     = new THREE.Mesh( plane_geo, phong );
-
     plane.rotation.x = -1.57;
     plane.position.y = 0;
 
     Scene.addObject( plane );
+
+    var loader = new THREE.CubeTextureLoader();
+    loader.setPath( 'textures/cube_maps/ame_nebula/' );
+
+    var texture = loader.load([
+        'purplenebula_bk.tga',
+        'purplenebula_dn.tga',
+        'purplenebula_ft.tga',
+        'purplenebula_lf.tga',
+        'purplenebula_rt.tga',
+        'purplenebula_up.tga'
+    ]);
+    Scene._scene.background = texture;
 }
 
 /**
