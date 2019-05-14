@@ -396,9 +396,10 @@ function genericPlaneScene() {
  * @description Return a JSON object that can be used to configure a fireworks 
  * particle system. Having a function ensures that repeated initializations of 
  * a fireworks particle system use independent JSON objects. Cloning objects is 
- * too much hustle :-)
+ * too much hassle :-)
  */
 function generateGenericSystemConfig() {
+  
     return {
 
         // Particle Material
@@ -411,7 +412,7 @@ function generateGenericSystemConfig() {
             origin: new THREE.Vector3 (0.0, 0.0, 0.0),
             color: ORANGE_VEC4,
             velocity: new THREE.Vector3 (0.0, 30.0, 0.0), 
-            targetPosition: new THREE.Vector3 (50.0, 50.0, 0.0),
+            targetPosition: new THREE.Vector3 (0.0, 50.0, 0.0),
             damping: new THREE.Vector3 ( 0.0, 0, 0 ),
             lifetime: 7,
             size: 5.0,
