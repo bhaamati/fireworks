@@ -338,7 +338,7 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
     var attractors = this._opts.externalForces.attractors;
     var dampenings = particleAttributes.dampening;
     var lifetimes     = particleAttributes.lifetime;
-    let explodeHalflife = this._opts.originalLifetime / 4.0;
+    let explodeLifetime = this._opts.explodeLifetime;
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
@@ -349,7 +349,7 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
         // now update velocity based on forces...
         
         // Detonate the fireworks at a certain lifetime
-        if (l > explodeHalflife && l - explodeHalflife <= 2 * delta_t) {
+        if (l > explodeLifetime && l - explodeLifetime <= 2 * delta_t) {
             v = getRandomPointOnUnitSphere();
             v.multiplyScalar(10);
         }
@@ -362,15 +362,29 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
 
 BasicFireworksUpdater.prototype.updateColors = function ( particleAttributes, alive, delta_t ) {
     var colors    = particleAttributes.color;
+    let baseColor = this._opts.originalColor;
+    let lifetimes     = particleAttributes.lifetime;
+    
+    let brightnessFactor = 1;
+    if (baseColor.x < brightnessFactor && baseColor.x > 0) brightnessFactor = baseColor.x;
+    if (baseColor.y < brightnessFactor && baseColor.y > 0) brightnessFactor = baseColor.y;
+    if (baseColor.z < brightnessFactor && baseColor.z > 0) brightnessFactor = baseColor.z;
+    brightnessFactor = 1 / brightnessFactor;
+
+    let explodeLifetime = this._opts.explodeLifetime;
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
 
         if ( !alive[i] ) continue;
-        // ----------- STUDENT CODE BEGIN ------------
-        var c = getElement( i, colors );
-
+        //let c = getElement( i, colors );
+        let l = getElement(i, lifetimes);
+        c = new THREE.Vector4(1, 1, 1, 1);
+        if (l < explodeLifetime) {
+            // c = baseColor.clone();
+            // c.multiplyScalar(brightnessFactor);
+            c = new THREE.Vector4(1, 1, 1, 1);
+        }
         setElement( i, colors, c );
-        // ----------- STUDENT CODE END ------------
     }
 };
 

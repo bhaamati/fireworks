@@ -413,7 +413,7 @@ function generateGenericSystemConfig() {
             velocity: new THREE.Vector3 (0.0, 30.0, 0.0), 
             targetPosition: new THREE.Vector3 (50.0, 50.0, 0.0),
             damping: new THREE.Vector3 ( 0.0, 0, 0 ),
-            lifetime: 7,
+            lifetime: 10,
             size: 5.0,
         },
     
@@ -427,7 +427,9 @@ function generateGenericSystemConfig() {
             collidables: {},
             targetPosition: new THREE.Vector3 (50.0, 50.0, 0.0),
             originalLifetime: 7,
-            explodePosition: new THREE.Vector3 (50.0, 50.0, 0.0)
+            explodeLifetime: 7 / 4.0,
+            explodePosition: new THREE.Vector3 (50.0, 50.0, 0.0),
+            originalColor: ORANGE_VEC4
         },
     
         // Scene
