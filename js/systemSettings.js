@@ -394,17 +394,20 @@ function genericPlaneScene() {
     // Scene.addObject( plane );
 
     // instantiate a loader
-    var loader = new THREE.CubeTextureLoader();
-    loader.setPath( 'textures/cube_maps/darkcity/' );
+    // var loader = new THREE.CubeTextureLoader();
+    // loader.setPath( 'textures/cube_maps/darkcity/' );
 
-    var texture = loader.load([
-        'darkcity_bk.jpg',
-        'darkcity_dn.jpg',
-        'darkcity_ft.jpg',
-        'darkcity_lf.jpg',
-        'darkcity_rt.jpg',
-        'darkcity_up.jpg'
-    ]);
+    // var texture = loader.load([
+    //     'darkcity_bk.jpg',
+    //     'darkcity_dn.jpg',
+    //     'darkcity_ft.jpg',
+    //     'darkcity_lf.jpg',
+    //     'darkcity_rt.jpg',
+    //     'darkcity_up.jpg'
+    // ]);
+
+    let loader = new THREE.TextureLoader();
+    let texture = loader.load('images/london_eye.jpg');
     Scene._scene.background = texture;
 }
 
@@ -430,7 +433,7 @@ function generateGenericSystemConfig() {
             targetPosition: new THREE.Vector3 (0.0, 30.0, 0.0),
             damping: new THREE.Vector3 ( 0.0, 0, 0 ),
             lifetime: 7,
-            size: 5.0,
+            size: 10.0,
         },
     
         // Updater
