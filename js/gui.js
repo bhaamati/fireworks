@@ -7,7 +7,7 @@ Gui.sceneList = [];
 
 Gui.windowSizes = [ "full","400x400","600x400","600x600","800x600","800x800" ];
 
-Gui.blendTypes = [ "Normal", "Additive" ];
+// Gui.blendTypes = [ "Normal", "Additive" ];
 
 Gui.particleSystems = [ "basic", "basicFireworks", "risingTailFireworks" ];
 
@@ -22,7 +22,7 @@ Gui.values = {
     reset:       function () {},
     stopTime:    function () {},
     guiToBatch : function() {},
-    blendTypes:  Gui.blendTypes[0],
+    // blendTypes:  Gui.blendTypes[0],
     textures:    Gui.textures[0],
     systems:     Gui.particleSystems[0],
     depthTest:   true,
@@ -78,7 +78,7 @@ Gui.init = function ( meshChangeCallback, controlsChangeCallback, displayChangeC
     gc.systems   = gui.add( Gui.values, 'systems', Gui.particleSystems ).name("ParticleSystems");
 
     var disp = gui.addFolder( "DISPLAY OPTIONS");
-    gc.blends    = disp.add( Gui.values, 'blendTypes', Gui.blendTypes ).name("Blending Types");
+    // gc.blends    = disp.add( Gui.values, 'blendTypes', Gui.blendTypes ).name("Blending Types");
     gc.textures  = disp.add( Gui.values, 'textures', Gui.textures ).name("Textures");
     gc.fireworkTypes  = disp.add( Gui.values, 'fireworkTypes', Gui.textures ).name("Firework Types");
     gc.depthTest = disp.add( Gui.values, 'depthTest' ).name("Depth Test");
@@ -91,21 +91,25 @@ Gui.init = function ( meshChangeCallback, controlsChangeCallback, displayChangeC
     gc.stopTime.onChange( ParticleEngine.pause );
     gc.reset.onChange( ParticleEngine.restart );
 
-    gc.blends.onChange( function( value ) {
-        var emitters = ParticleEngine.getEmitters();
-        var blendType;
-        if ( value == "Normal" ) {
-            var blendType = THREE.NormalBlending;
-        } else if ( value == "Additive" ) {
-            var blendType = THREE.AdditiveBlending;
-        } else {
-            console.log( "Blend type unknown!" );
-            return;
-        }
-        for ( var i = 0 ; i < emitters.length ; i++ ) {
-            emitters[i]._material.blending = blendType ;
-        }
-    } );
+    /**
+     * We disabled the blending for fireworks as AdditiveBlending is the one that 
+     * makes most sense for fireworks
+     */
+    // gc.blends.onChange( function( value ) {
+    //     var emitters = ParticleEngine.getEmitters();
+    //     var blendType;
+    //     if ( value == "Normal" ) {
+    //         var blendType = THREE.NormalBlending;
+    //     } else if ( value == "Additive" ) {
+    //         var blendType = THREE.AdditiveBlending;
+    //     } else {
+    //         console.log( "Blend type unknown!" );
+    //         return;
+    //     }
+    //     for ( var i = 0 ; i < emitters.length ; i++ ) {
+    //         emitters[i]._material.blending = blendType ;
+    //     }
+    // } );
 
     gc.textures.onChange( function( value ) {
         var emitters = ParticleEngine.getEmitters();
