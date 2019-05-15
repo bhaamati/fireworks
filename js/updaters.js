@@ -155,7 +155,7 @@ EulerUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, d
         var lifetime = getElement( i, lifetimes );
 
         if ( lifetime < 0 ) {
-            killPartilce( i, particleAttributes, alive );
+            killParticle( i, particleAttributes, alive );
         } else {
             setElement( i, lifetimes, lifetime - delta_t );
         }
@@ -421,7 +421,7 @@ BasicFireworksUpdater.prototype.updateLifetimes = function ( particleAttributes,
         var lifetime = getElement( i, lifetimes );
 
         if ( lifetime < 0 ) {
-            killPartilce( i, particleAttributes, alive );
+            killParticle( i, particleAttributes, alive );
         } else {
             setElement( i, lifetimes, lifetime - delta_t );
         }
