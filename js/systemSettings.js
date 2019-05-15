@@ -380,6 +380,16 @@ SystemSettings.cloth = {
 // My System
 ////////////////////////////////////////////////////////////////////////////////
 
+SystemSettings.risingTailFireworks = generateGenericSystemConfig(
+    RisingTailFireworksInitializer, 
+    RisingTailFireworksUpdater
+);
+
+SystemSettings.basicFireworks = generateGenericSystemConfig(
+    BasicFireworksInitializer, 
+    BasicFireworksUpdater
+);
+
 function genericPlaneScene() {
 
     var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
@@ -417,14 +427,13 @@ function genericPlaneScene() {
  * a fireworks particle system use independent JSON objects. Cloning objects is 
  * too much hustle :-)
  */
-function generateGenericSystemConfig() {
+function generateGenericSystemConfig(initializer, updater) {
     return {
-
         // Particle Material
         particleMaterial :  SystemSettings.standardMaterial,
     
         // Initializer
-        initializerFunction : BasicFireworksInitializer,
+        initializerFunction : initializer,
         initializerSettings : {
             sphere:   new THREE.Vector4 ( 0.0, 100.0, 0.0, 1.0 ),
             origin: new THREE.Vector3 (0.0, 0.0, 0.0),
@@ -437,7 +446,7 @@ function generateGenericSystemConfig() {
         },
     
         // Updater
-        updaterFunction : BasicFireworksUpdater,
+        updaterFunction : updater,
         updaterSettings : {
             externalForces : {
                 gravity :     new THREE.Vector3( 0, 0, 0),
@@ -455,8 +464,10 @@ function generateGenericSystemConfig() {
         maxParticles:  5000, // Ugly hack. To create a ball-like group of particles, set freq to x10
         particlesFreq: 100000,
         createScene : genericPlaneScene,
+
+        animatedModelName: false
     
     };
 }
 
-SystemSettings.mySystem = generateGenericSystemConfig();
+
