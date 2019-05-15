@@ -115,6 +115,7 @@ Gui.init = function ( meshChangeCallback, controlsChangeCallback, displayChangeC
     gc.systems.onChange( function(value) {
         var settings = SystemSettings[value];
         Main.particleSystemChangeCallback ( settings );
+        Main.currentSystemName = value;
     } );
 
     gc.depthTest.onChange( function( value ) {

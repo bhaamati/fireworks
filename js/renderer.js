@@ -157,8 +157,23 @@ Renderer.onClick = function( event ) {
     pos.copy( Renderer._camera.position ).add( vec.multiplyScalar( distance ) );
     Renderer._clickPos = pos;
 
-    // Create new system
-    let baseSystem = generateGenericSystemConfig();
+    // Create new system based on the recent click
+    let emitters = ParticleEngine.getEmitters();
+    if (emitters.length === 0) return;
+
+    let baseSystem;
+    if (Main.currentSystemName === "risingTailFireworks") {
+        baseSystem = generateGenericSystemConfig(
+            RisingTailFireworksInitializer, RisingTailFireworksUpdater
+        );
+    } else if (Main.currentSystemName === "basicFireworks") {
+        baseSystem = generateGenericSystemConfig(
+            BasicFireworksInitializer, BasicFireworksUpdater
+        );
+    } else {
+        return;
+    }
+    
 
     let settings = baseSystem.initializerSettings;
     settings.targetPosition = Renderer._clickPos.clone();
@@ -182,15 +197,17 @@ Renderer.onClick = function( event ) {
         width:         baseSystem.width,
         height:        baseSystem.height,
     });
+    ParticleEngine.addEmitter(emitter);
 
     // If we are not dealing with cloth, lets sort particles
     if ( !baseSystem.cloth ) {
         emitter.enableSorting( Gui.values.sorting );
     }
-    ParticleEngine.addEmitter(emitter);
-    ParticleEngine.start();
 
+    ParticleEngine.start();
     Scene.addObject(
         ParticleEngine.getDrawableParticles(ParticleEngine._emitters.length - 1)
     );
+    
+    
 };
