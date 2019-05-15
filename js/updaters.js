@@ -391,20 +391,9 @@ RisingTailFireworksUpdater.prototype.updatePositions = function ( particleAttrib
     for ( var i  = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
         var p = getElement( i, positions );
-        var parentIdx = getElement(i, parents);
-        if (parentIdx === -1) {
-            var v = getElement( i, velocities );
-            p.add( v.clone().multiplyScalar( delta_t ) );
-            setElement( i, positions, p );
-        } else {
-            break;
-        }
-    }
-
-    for (var i = alive.length - 1; i >= 0; i--) {
-        var parentIdx = getElement(i, parents);
-        if (parentIdx === -1) break; // We've reached the non-trailing particles
-        setElement(i, positions, getElement(parentIdx, positions));
+        var v = getElement( i, velocities );
+        p.add( v.clone().multiplyScalar( delta_t ) );
+        setElement( i, positions, p );
     }
 };
 
