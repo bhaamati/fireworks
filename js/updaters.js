@@ -210,7 +210,7 @@ EulerUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) 
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Euler updater
+// Basic Firework Updater
 ////////////////////////////////////////////////////////////////////////////////
 
 function BasicFireworksUpdater ( opts ) {
@@ -261,7 +261,7 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
             v = getRandomPointOnUnitSphere();
             v.multiplyScalar(10);
         }
-
+         
         setElement( i, velocities, v );
         // ----------- STUDENT CODE END ------------
     }
@@ -542,6 +542,186 @@ RisingTailFireworksUpdater.prototype.collisions = function ( particleAttributes,
 };
 
 RisingTailFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
+    this.updateLifetimes( particleAttributes, alive, delta_t );
+    this.updateVelocities( particleAttributes, alive, delta_t );
+    this.updatePositions( particleAttributes, alive, delta_t );
+
+    // this.collisions( particleAttributes, alive, delta_t );
+
+    this.updateColors( particleAttributes, alive, delta_t );
+    // this.updateSizes( particleAttributes, alive, delta_t );
+
+    // tell webGL these were updated
+    particleAttributes.position.needsUpdate = true;
+    particleAttributes.color.needsUpdate = true;
+    particleAttributes.velocity.needsUpdate = true;
+    particleAttributes.lifetime.needsUpdate = true;
+    // particleAttributes.size.needsUpdate = true;
+
+};
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Strobe Firework Updater
+////////////////////////////////////////////////////////////////////////////////
+
+function StrobeFireworksUpdater ( opts ) {
+    this._opts = opts;
+    return this;
+};
+
+
+StrobeFireworksUpdater.prototype.updatePositions = function ( particleAttributes, alive, delta_t ) {
+    var positions  = particleAttributes.position;
+    var velocities = particleAttributes.velocity;
+
+    for ( var i  = 0 ; i < alive.length ; ++i ) {
+        if ( !alive[i] ) continue;
+        var p = getElement( i, positions );
+        var v = getElement( i, velocities );
+        p.add( v.clone().multiplyScalar( delta_t ) );
+        setElement( i, positions, p );
+    }
+};
+
+StrobeFireworksUpdater.prototype.updateVelocities = function ( particleAttributes, alive, delta_t ) {
+    var positions = particleAttributes.position;
+    var velocities = particleAttributes.velocity;
+    var gravity = this._opts.externalForces.gravity;
+    var attractors = this._opts.externalForces.attractors;
+    var dampenings = particleAttributes.dampening;
+    var lifetimes     = particleAttributes.lifetime;
+    let explodeLifetime = this._opts.explodeLifetime;
+
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+        if ( !alive[i] ) continue;
+        // ----------- STUDENT CODE BEGIN ------------
+        var p = getElement( i, positions );
+        var v = getElement( i, velocities );
+        let l = getElement(i, lifetimes);
+        // now update velocity based on forces...
+        
+        // Detonate the fireworks at a certain lifetime
+        if (l > explodeLifetime && l - explodeLifetime <= 2 * delta_t) {
+            v = getRandomPointOnUnitSphere();
+            v.multiplyScalar(10);
+        }
+         
+        setElement( i, velocities, v );
+        // ----------- STUDENT CODE END ------------
+    }
+
+};
+
+StrobeFireworksUpdater.prototype.updateColors = function ( particleAttributes, alive, delta_t ) {
+    var colors    = particleAttributes.color;
+    let baseColor = this._opts.originalColor;
+    let lifetimes     = particleAttributes.lifetime;
+    
+    let brightnessFactor = 1;
+    if (baseColor.x < brightnessFactor && baseColor.x > 0) brightnessFactor = baseColor.x;
+    if (baseColor.y < brightnessFactor && baseColor.y > 0) brightnessFactor = baseColor.y;
+    if (baseColor.z < brightnessFactor && baseColor.z > 0) brightnessFactor = baseColor.z;
+    brightnessFactor = 1 / brightnessFactor;
+
+    let explodeLifetime = this._opts.explodeLifetime;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+        let c = getElement( i, colors );
+        let l = getElement(i, lifetimes);
+        if (l < explodeLifetime) {
+            c = baseColor.clone();
+            c.multiplyScalar(brightnessFactor * (l / explodeLifetime));
+            c.clampScalar(0, 1);
+        } else {
+            c.w = 1; // Make the fireworks transparent before going kaboom!
+        }
+        
+
+        let val = Math.random();
+        if (l < explodeLifetime) {
+            if (val < 0.4) {
+                c = new THREE.Vector4(1, 1, 1, 0.0);
+            }
+            if (val > 0.4 && val < 0.6) {
+                c = new THREE.Vector4(209/255, 151/255, 37/255, 1);
+            }
+            if (val > 0.6 && val < 0.8) {
+                c = new THREE.Vector4(64/255, 214/255, 1, 1);
+            }
+            if (val > 0.8 && val < 1.0) {
+                c = new THREE.Vector4(66/255, 37/255, 209/255, 1);
+            }
+        }
+        setElement( i, colors, c );
+    }
+};
+
+StrobeFireworksUpdater.prototype.updateSizes= function ( particleAttributes, alive, delta_t ) {
+    var sizes    = particleAttributes.size;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+        // ----------- STUDENT CODE BEGIN ------------
+        var s = getElement( i, sizes );
+
+        setElement( i, sizes, s );
+        // ----------- STUDENT CODE END ------------
+    }
+
+};
+
+StrobeFireworksUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, delta_t) {
+    var positions     = particleAttributes.position;
+    var lifetimes     = particleAttributes.lifetime;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+
+        var lifetime = getElement( i, lifetimes );
+
+        if ( lifetime < 0 ) {
+            killParticle( i, particleAttributes, alive );
+        } else {
+            setElement( i, lifetimes, lifetime - delta_t );
+        }
+    }
+
+};
+
+StrobeFireworksUpdater.prototype.collisions = function ( particleAttributes, alive, delta_t ) {
+    if ( !this._opts.collidables ) {
+        return;
+    }
+    if ( this._opts.collidables.bouncePlanes ) {
+        for (var i = 0 ; i < this._opts.collidables.bouncePlanes.length ; ++i ) {
+            var plane = this._opts.collidables.bouncePlanes[i].plane;
+            var damping = this._opts.collidables.bouncePlanes[i].damping;
+            Collisions.BouncePlane( particleAttributes, alive, delta_t, plane, damping );
+        }
+    }
+
+    if ( this._opts.collidables.sinkPlanes ) {
+        for (var i = 0 ; i < this._opts.collidables.sinkPlanes.length ; ++i ) {
+            var plane = this._opts.collidables.sinkPlanes[i].plane;
+            Collisions.SinkPlane( particleAttributes, alive, delta_t, plane );
+        }
+    }
+
+    if ( this._opts.collidables.spheres ) {
+        for (var i = 0 ; i < this._opts.collidables.spheres.length ; ++i ) {
+            Collisions.Sphere( particleAttributes, alive, delta_t, this._opts.collidables.spheres[i] );
+        }
+    }
+};
+
+StrobeFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
     this.updateLifetimes( particleAttributes, alive, delta_t );
     this.updateVelocities( particleAttributes, alive, delta_t );
     this.updatePositions( particleAttributes, alive, delta_t );

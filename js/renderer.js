@@ -172,7 +172,12 @@ Renderer.onClick = function( event ) {
         baseSystem = generateGenericSystemConfig(
             BasicFireworksInitializer, BasicFireworksUpdater
         );
-    } else {
+    } else if (Main.currentSystemName === "strobeFireworks") {
+        baseSystem = generateGenericSystemConfig(
+            StrobeFireworksInitializer, StrobeFireworksUpdater
+        );
+    } 
+    else {
         return;
     }
     

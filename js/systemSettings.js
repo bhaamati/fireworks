@@ -388,6 +388,10 @@ SystemSettings.basicFireworks = generateGenericSystemConfig(
     BasicFireworksInitializer, BasicFireworksUpdater, "basicFireworks"
 );
 
+SystemSettings.strobeFireworks = generateGenericSystemConfig(
+    StrobeFireworksInitializer, StrobeFireworksUpdater, "strobeFireworks"
+);
+
 function genericPlaneScene() {
 
     var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );

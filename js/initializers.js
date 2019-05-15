@@ -550,7 +550,7 @@ BasicFireworksInitializer.prototype.initialize = function ( particleAttributes, 
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// Strobe Fireworks Initializer
+// Rising Tail Fireworks Initializer
 ////////////////////////////////////////////////////////////////////////////////
 
 function RisingTailFireworksInitializer ( opts ) {
@@ -631,6 +631,109 @@ RisingTailFireworksInitializer.prototype.initializeLifetimes = function ( lifeti
 RisingTailFireworksInitializer.prototype.initialize = function ( particleAttributes, toSpawn ) {
     // update required values
     this.initializePositions( particleAttributes.position, toSpawn );
+
+    this.initializeVelocities( particleAttributes.velocity,  particleAttributes.dampening, particleAttributes.position, toSpawn );
+
+    this.initializeColors( particleAttributes.color, toSpawn );
+
+    this.initializeLifetimes( particleAttributes.lifetime, toSpawn );
+
+    this.initializeSizes( particleAttributes.size, toSpawn );
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Strobe Fireworks Initializer
+////////////////////////////////////////////////////////////////////////////////
+
+function StrobeFireworksInitializer ( opts ) {
+    this._opts = opts;
+    return this;
+};
+
+/**
+ * @description Generate a spherical ball of particles at the base
+ */
+StrobeFireworksInitializer.prototype.initializePositions = function ( positions, toSpawn, parent, child) {
+    var base = this._opts.sphere;
+    var base_pos = new THREE.Vector3( base.x, base.y, base.z );
+    var r   = base.w;
+    
+    for ( var i = 0 ; i < toSpawn.length; ++i ) {
+        var idx = toSpawn[i];
+        setElement( idx, positions, getRandomPointOnUnitSphere() );
+    }
+    SystemSettings.basicFireworks.updaterSettings.explodePosition = Renderer._clickPos;
+    positions.needUpdate = true;
+};
+function getLaunchVelocity(origin, target, lifetime) {
+    let v = target.clone();
+    v.sub(origin);
+    v.multiplyScalar(lifetime * 0.037);
+    return v;
+}
+
+StrobeFireworksInitializer.prototype.initializeVelocities = function ( velocities, dampenings, positions, toSpawn ) {
+    var base_vel = this._opts.velocity;
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        // ----------- STUDENT CODE BEGIN ------------
+        var vel = base_vel;
+        vel = getLaunchVelocity(
+            new THREE.Vector3 (0.0, 0.0, 0.0), 
+            this._opts.targetPosition, 
+            7 * 3 / 4
+        ),
+
+        // ----------- STUDENT CODE END ------------
+        setElement( idx, velocities, vel );
+        var damp = new THREE.Vector3(this._opts.damping.x,this._opts.damping.y,0);
+        setElement( idx, dampenings, damp); 
+
+    }
+    velocities.needUpdate = true;
+};
+
+StrobeFireworksInitializer.prototype.initializeColors = function ( colors, toSpawn ) {
+    var base_col = this._opts.color;
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        if (i <= toSpawn.length/5) {
+            var col = base_col;
+        } else {
+            var col = new THREE.Vector4(1.0, 1.1, 0.0, 0.5);
+        }
+        setElement( idx, colors, col );
+    }
+
+    
+    colors.needUpdate = true;
+};
+
+StrobeFireworksInitializer.prototype.initializeSizes = function ( sizes, toSpawn ) {
+
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        // ----------- STUDENT CODE BEGIN ------------
+        var size = this._opts.size;
+        // ----------- STUDENT CODE END ------------
+        setElement( idx, sizes, size );
+    }
+    sizes.needUpdate = true;
+};
+
+StrobeFireworksInitializer.prototype.initializeLifetimes = function ( lifetimes, toSpawn ) {
+
+    for ( var i = 0 ; i < toSpawn.length ; ++i ) {
+        var idx = toSpawn[i];
+        var lifetime = this._opts.lifetime;
+        setElement( idx, lifetimes, lifetime );
+    }
+    lifetimes.needUpdate = true;
+};
+
+StrobeFireworksInitializer.prototype.initialize = function ( particleAttributes, toSpawn ) {
+    // update required values
+    this.initializePositions( particleAttributes.position, toSpawn, particleAttributes.parent, particleAttributes.child );
 
     this.initializeVelocities( particleAttributes.velocity,  particleAttributes.dampening, particleAttributes.position, toSpawn );
 
