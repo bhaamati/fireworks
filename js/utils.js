@@ -108,7 +108,7 @@ function setGridElement ( i, j, width, attrib, val ) {
     }
 }
 
-function killPartilce ( i, partilceAttributes, alive ) {
+function killParticle ( i, particleAttributes, alive ) {
     alive[i] = false;
-    setElement( i, partilceAttributes.position, new THREE.Vector3(-1e9) );
+    setElement( i, particleAttributes.position, new THREE.Vector3(-1e9) );
 }

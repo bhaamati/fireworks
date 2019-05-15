@@ -63,12 +63,10 @@ Renderer.create = function( scene, canvas ) {
 
     // make sure renderer is aware of the scene it is rendering
     Renderer._scene = scene._scene;
-    
-    // create an AudioListener and add it to the camera
-    var listener = new THREE.AudioListener();
-    Renderer._camera.add( listener );
 
     // create a global audio source
+    var listener = new THREE.AudioListener();
+    Renderer._camera.add( listener );
     var sound = new THREE.Audio( listener );
     Renderer._sound = sound;
     // load a sound and set it as the Audio object's buffer
@@ -81,7 +79,7 @@ Renderer.create = function( scene, canvas ) {
     });
     Renderer._sound = sound;
     // create raycaster
-    Renderer._mouse = new THREE.Vector2;
+    Renderer._mouse = new THREE.Vector2();
     Renderer._raycaster = new THREE.Raycaster();
 };
 
@@ -161,8 +159,23 @@ Renderer.onClick = function( event ) {
     pos.copy( Renderer._camera.position ).add( vec.multiplyScalar( distance ) );
     Renderer._clickPos = pos;
 
-    // Create new system
-    let baseSystem = generateGenericSystemConfig();
+    // Create new system based on the recent click
+    let emitters = ParticleEngine.getEmitters();
+    if (emitters.length === 0) return;
+
+    let baseSystem;
+    if (Main.currentSystemName === "risingTailFireworks") {
+        baseSystem = generateGenericSystemConfig(
+            RisingTailFireworksInitializer, RisingTailFireworksUpdater
+        );
+    } else if (Main.currentSystemName === "basicFireworks") {
+        baseSystem = generateGenericSystemConfig(
+            BasicFireworksInitializer, BasicFireworksUpdater
+        );
+    } else {
+        return;
+    }
+    
 
     let settings = baseSystem.initializerSettings;
     settings.targetPosition = Renderer._clickPos.clone();
@@ -186,19 +199,17 @@ Renderer.onClick = function( event ) {
         width:         baseSystem.width,
         height:        baseSystem.height,
     });
-    
-    // If we are not dealing with cloth, lets sort particles
-    // if ( !baseSystem.cloth ) {
-    //     emitter.enableSorting( Gui.values.sorting );
-    // }
-    // if (ParticleEngine._emitters.length === 4) {
-    //     ParticleEngine.removeOneEmitters();
-    // }
     ParticleEngine.addEmitter(emitter);
-    ParticleEngine.start();
 
+    // If we are not dealing with cloth, lets sort particles
+    if ( !baseSystem.cloth ) {
+        emitter.enableSorting( Gui.values.sorting );
+    }
+
+    ParticleEngine.start();
     Scene.addObject(
         ParticleEngine.getDrawableParticles(ParticleEngine._emitters.length - 1)
     );
+    
     
 };

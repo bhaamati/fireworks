@@ -9,7 +9,7 @@ Gui.windowSizes = [ "full","400x400","600x400","600x600","800x600","800x800" ];
 
 Gui.blendTypes = [ "Normal", "Additive" ];
 
-Gui.particleSystems = [ "basic", "oscilator", "fountainBounce", "fountainSink", "attractor", "animated", "cloth", "mySystem" ];
+Gui.particleSystems = [ "basic", "basicFireworks", "risingTailFireworks" ];
 
 Gui.textures = [ "blank", "base", "fire", "smoke", "spark", "sphere", "smoke" ];
 
@@ -118,6 +118,7 @@ Gui.init = function ( meshChangeCallback, controlsChangeCallback, displayChangeC
     gc.systems.onChange( function(value) {
         var settings = SystemSettings[value];
         Main.particleSystemChangeCallback ( settings );
+        Main.currentSystemName = value;
     } );
 
     gc.depthTest.onChange( function( value ) {

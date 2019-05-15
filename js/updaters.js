@@ -155,7 +155,7 @@ EulerUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, d
         var lifetime = getElement( i, lifetimes );
 
         if ( lifetime < 0 ) {
-            killPartilce( i, particleAttributes, alive );
+            killParticle( i, particleAttributes, alive );
         } else {
             setElement( i, lifetimes, lifetime - delta_t );
         }
@@ -207,105 +207,6 @@ EulerUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) 
     particleAttributes.lifetime.needsUpdate = true;
     particleAttributes.size.needsUpdate = true;
 
-}
-
-
-function ClothUpdater ( opts ) {
-    this._opts = opts;
-    this._s = 10.0;
-    this._k_s = 0.55;
-    return this;
-}
-
-ClothUpdater.prototype.calcHooke = function ( p, q ) {
-    // ----------- STUDENT CODE BEGIN ------------
-    var k_s = this._k_s;
-    var rest_len = this._s;
-
-    return THREE.Vector3();
-    // ----------- STUDENT CODE END ------------
-}
-
-ClothUpdater.prototype.updatePositions = function ( particleAttributes, alive, delta_t ) {
-    var positions  = particleAttributes.position;
-    var velocities = particleAttributes.velocity;
-
-    for ( var i  = 0 ; i < alive.length ; ++i ) {
-        if ( !alive[i] ) continue;
-        var p = getElement( i, positions );
-        var v = getElement( i, velocities );
-        p.add( v.clone().multiplyScalar( delta_t ) );
-        setElement( i, positions, p );
-    }
-};
-
-ClothUpdater.prototype.updateVelocities = function ( particleAttributes, alive, delta_t, width, height ) {
-    var positions = particleAttributes.position;
-    var velocities = particleAttributes.velocity;
-    var gravity = this._opts.externalForces.gravity;
-    var attractors = this._opts.externalForces.attractors;
-
-    for ( var j = 0 ; j < height; ++j ) {
-        for ( var i = 0 ; i < width ; ++i ) {
-            var idx = j * width + i;
-
-            // ----------- STUDENT CODE BEGIN ------------
-            var p = getElement( idx, positions );
-            var v = getElement( idx, velocities );
-
-            // calculate forces on this node from neighboring springs 
-            // (using this.calcHooke()... )
-
-            setElement( idx, velocities, v );
-            // ----------- STUDENT CODE END ------------
-        }
-    }
-
-};
-
-
-ClothUpdater.prototype.collisions = function ( particleAttributes, alive, delta_t ) {
-    if ( !this._opts.collidables ) {
-        return;
-    }
-    if ( this._opts.collidables.bouncePlanes ) {
-        for (var i = 0 ; i < this._opts.collidables.bouncePlanes.length ; ++i ) {
-            var plane = this._opts.collidables.bouncePlanes[i].plane;
-            var damping = this._opts.collidables.bouncePlanes[i].damping;
-            Collisions.BouncePlane( particleAttributes, alive, delta_t, plane, damping );
-        }
-    }
-
-    if ( this._opts.collidables.sinkPlanes ) {
-        for (var i = 0 ; i < this._opts.collidables.sinkPlanes.length ; ++i ) {
-            var plane = this._opts.collidables.sinkPlanes[i].plane;
-            Collisions.SinkPlane( particleAttributes, alive, delta_t, plane );
-        }
-    }
-
-    if ( this._opts.collidables.bounceSpheres ) {
-        for (var i = 0 ; i < this._opts.collidables.bounceSpheres.length ; ++i ) {
-            var sphere = this._opts.collidables.bounceSpheres[i].sphere;
-            var damping = this._opts.collidables.bounceSpheres[i].damping;
-            Collisions.BounceSphere( particleAttributes, alive, delta_t, sphere, damping );
-        }
-    }
-};
-
-
-ClothUpdater.prototype.update = function ( particleAttributes, alive, delta_t, width, height ) {
-
-    this.updateVelocities( particleAttributes, alive, delta_t, width, height );
-    this.updatePositions( particleAttributes, alive, delta_t, width, height );
-
-    this.collisions( particleAttributes, alive, delta_t );
-
-    // tell webGL these were updated
-    particleAttributes.position.needsUpdate = true;
-    particleAttributes.color.needsUpdate = true;
-    particleAttributes.velocity.needsUpdate = true;
-    particleAttributes.lifetime.needsUpdate = true;
-    particleAttributes.size.needsUpdate = true;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -321,25 +222,13 @@ function BasicFireworksUpdater ( opts ) {
 BasicFireworksUpdater.prototype.updatePositions = function ( particleAttributes, alive, delta_t ) {
     var positions  = particleAttributes.position;
     var velocities = particleAttributes.velocity;
-    var parents = particleAttributes.parent;
 
     for ( var i  = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
         var p = getElement( i, positions );
-        var parentIdx = getElement(i, parents);
-        if (parentIdx === -1) {
-            var v = getElement( i, velocities );
-            p.add( v.clone().multiplyScalar( delta_t ) );
-            setElement( i, positions, p );
-        } else {
-            break;
-        }
-    }
-
-    for (var i = alive.length - 1; i >= 0; i--) {
-        var parentIdx = getElement(i, parents);
-        if (parentIdx === -1) break; // We've reached the non-trailing particles
-        setElement(i, positions, getElement(parentIdx, positions));
+        var v = getElement( i, velocities );
+        p.add( v.clone().multiplyScalar( delta_t ) );
+        setElement( i, positions, p );
     }
 };
 
@@ -350,7 +239,14 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
     var attractors = this._opts.externalForces.attractors;
     var dampenings = particleAttributes.dampening;
     var lifetimes     = particleAttributes.lifetime;
-    let explodeHalflife = this._opts.originalLifetime / 4.0;
+    let explodeLifetime = this._opts.explodeLifetime;
+
+    // Uncomment this to debug the audio feature
+    // let life = getElement(0, lifetimes);
+    // if (life > explodeLifetime && life - explodeLifetime <= 2 * delta_t) {
+    //     Renderer._sound.play();
+    // }
+
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
         if ( !alive[i] ) continue;
@@ -361,7 +257,7 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
         // now update velocity based on forces...
         
         // Detonate the fireworks at a certain lifetime
-        if (l > explodeHalflife && l - explodeHalflife <= 2 * delta_t) {
+        if (l > explodeLifetime && l - explodeLifetime <= 2 * delta_t) {
             v = getRandomPointOnUnitSphere();
             v.multiplyScalar(10);
         }
@@ -374,15 +270,30 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
 
 BasicFireworksUpdater.prototype.updateColors = function ( particleAttributes, alive, delta_t ) {
     var colors    = particleAttributes.color;
+    let baseColor = this._opts.originalColor;
+    let lifetimes     = particleAttributes.lifetime;
+    
+    let brightnessFactor = 1;
+    if (baseColor.x < brightnessFactor && baseColor.x > 0) brightnessFactor = baseColor.x;
+    if (baseColor.y < brightnessFactor && baseColor.y > 0) brightnessFactor = baseColor.y;
+    if (baseColor.z < brightnessFactor && baseColor.z > 0) brightnessFactor = baseColor.z;
+    brightnessFactor = 1 / brightnessFactor;
+
+    let explodeLifetime = this._opts.explodeLifetime;
 
     for ( var i = 0 ; i < alive.length ; ++i ) {
 
         if ( !alive[i] ) continue;
-        // ----------- STUDENT CODE BEGIN ------------
-        var c = getElement( i, colors );
-
+        let c = getElement( i, colors );
+        let l = getElement(i, lifetimes);
+        if (l < explodeLifetime) {
+            c = baseColor.clone();
+            c.multiplyScalar(brightnessFactor * (l / explodeLifetime));
+            c.clampScalar(0, 1);
+        } else {
+            c.w = 1; // Make the fireworks transparent before going kaboom!
+        }
         setElement( i, colors, c );
-        // ----------- STUDENT CODE END ------------
     }
 };
 
@@ -412,7 +323,7 @@ BasicFireworksUpdater.prototype.updateLifetimes = function ( particleAttributes,
         var lifetime = getElement( i, lifetimes );
 
         if ( lifetime < 0 ) {
-            killPartilce( i, particleAttributes, alive );
+            killParticle( i, particleAttributes, alive );
         } else {
             setElement( i, lifetimes, lifetime - delta_t );
         }
@@ -451,16 +362,211 @@ BasicFireworksUpdater.prototype.update = function ( particleAttributes, alive, d
     this.updateVelocities( particleAttributes, alive, delta_t );
     this.updatePositions( particleAttributes, alive, delta_t );
 
-    this.collisions( particleAttributes, alive, delta_t );
+    // this.collisions( particleAttributes, alive, delta_t );
 
     this.updateColors( particleAttributes, alive, delta_t );
-    this.updateSizes( particleAttributes, alive, delta_t );
+    // this.updateSizes( particleAttributes, alive, delta_t );
 
     // tell webGL these were updated
     particleAttributes.position.needsUpdate = true;
     particleAttributes.color.needsUpdate = true;
     particleAttributes.velocity.needsUpdate = true;
     particleAttributes.lifetime.needsUpdate = true;
-    particleAttributes.size.needsUpdate = true;
+    // particleAttributes.size.needsUpdate = true;
 
+};
+
+
+function RisingTailFireworksUpdater ( opts ) {
+    this._opts = opts;
+    return this;
+};
+
+
+RisingTailFireworksUpdater.prototype.updatePositions = function ( particleAttributes, alive, delta_t ) {
+    var positions  = particleAttributes.position;
+    var velocities = particleAttributes.velocity;
+    var parents = particleAttributes.parent;
+
+    for ( var i  = 0 ; i < alive.length ; ++i ) {
+        if ( !alive[i] ) continue;
+        var p = getElement( i, positions );
+        var parentIdx = getElement(i, parents);
+        if (parentIdx === -1) {
+            var v = getElement( i, velocities );
+            p.add( v.clone().multiplyScalar( delta_t ) );
+            setElement( i, positions, p );
+        } else {
+            break;
+        }
+    }
+
+    for (var i = alive.length - 1; i >= 0; i--) {
+        var parentIdx = getElement(i, parents);
+        if (parentIdx === -1) break; // We've reached the non-trailing particles
+        setElement(i, positions, getElement(parentIdx, positions));
+    }
+};
+
+/**
+ * @description https://stackoverflow.com/questions/41749411/uniform-sampling-by-volume-within-a-cone
+ */
+function getRandomPointOnSideOfRightCone(height, radius) {
+    let sampledHeight = height * Math.sqrt(Math.random());
+    let sampledRadius = (radius / height) * sampledHeight;
+    let sampledTheta = 2 * Math.PI * Math.random();
+    let v = new THREE.Vector3(
+        sampledRadius * Math.cos(sampledTheta), 
+        sampledHeight, 
+        sampledRadius * Math.sin(sampledTheta)
+    );
+    return v;
 }
+
+RisingTailFireworksUpdater.prototype.updateVelocities = function ( particleAttributes, alive, delta_t ) {
+    var positions = particleAttributes.position;
+    var velocities = particleAttributes.velocity;
+    var gravity = this._opts.externalForces.gravity;
+    var attractors = this._opts.externalForces.attractors;
+    var dampenings = particleAttributes.dampening;
+    var lifetimes     = particleAttributes.lifetime;
+    let explodeLifetime = this._opts.explodeLifetime;
+
+    // Uncomment this to debug the audio feature
+    // let life = getElement(0, lifetimes);
+    // if (life > explodeLifetime && life - explodeLifetime <= 2 * delta_t) {
+    //     Renderer._sound.play();
+    // }
+    let dragComponent = -20.0 / (explodeLifetime / delta_t);
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+        if ( !alive[i] ) continue;
+        // ----------- STUDENT CODE BEGIN ------------
+        var p = getElement( i, positions );
+        var v = getElement( i, velocities );
+        let l = getElement(i, lifetimes);
+        // now update velocity based on forces...
+        
+        // Detonate the fireworks at a certain lifetime
+        if (l < explodeLifetime) {
+            if (explodeLifetime - l <= 2 * delta_t) {
+                v = getRandomPointOnSideOfRightCone(1, 1);
+                v.multiplyScalar(10);
+            } else {
+                v.y += dragComponent;
+            }
+        }
+
+        setElement( i, velocities, v );
+        // ----------- STUDENT CODE END ------------
+    }
+
+};
+
+RisingTailFireworksUpdater.prototype.updateColors = function ( particleAttributes, alive, delta_t ) {
+    var colors    = particleAttributes.color;
+    let baseColor = this._opts.originalColor;
+    let lifetimes     = particleAttributes.lifetime;
+    
+    let brightnessFactor = 1;
+    if (baseColor.x < brightnessFactor && baseColor.x > 0) brightnessFactor = baseColor.x;
+    if (baseColor.y < brightnessFactor && baseColor.y > 0) brightnessFactor = baseColor.y;
+    if (baseColor.z < brightnessFactor && baseColor.z > 0) brightnessFactor = baseColor.z;
+    brightnessFactor = 1 / brightnessFactor;
+
+    let explodeLifetime = this._opts.explodeLifetime;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+        let c = getElement( i, colors );
+        let l = getElement(i, lifetimes);
+        if (l < explodeLifetime) {
+            c = baseColor.clone();
+            c.multiplyScalar(brightnessFactor * (l / explodeLifetime));
+            c.clampScalar(0, 1);
+        } else {
+            c.w = 1; // Make the fireworks transparent before going kaboom!
+        }
+        setElement( i, colors, c );
+    }
+};
+
+RisingTailFireworksUpdater.prototype.updateSizes= function ( particleAttributes, alive, delta_t ) {
+    var sizes    = particleAttributes.size;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+        // ----------- STUDENT CODE BEGIN ------------
+        var s = getElement( i, sizes );
+
+        setElement( i, sizes, s );
+        // ----------- STUDENT CODE END ------------
+    }
+
+};
+
+RisingTailFireworksUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, delta_t) {
+    var positions     = particleAttributes.position;
+    var lifetimes     = particleAttributes.lifetime;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+
+        var lifetime = getElement( i, lifetimes );
+
+        if ( lifetime < 0 ) {
+            killParticle( i, particleAttributes, alive );
+        } else {
+            setElement( i, lifetimes, lifetime - delta_t );
+        }
+    }
+
+};
+
+RisingTailFireworksUpdater.prototype.collisions = function ( particleAttributes, alive, delta_t ) {
+    if ( !this._opts.collidables ) {
+        return;
+    }
+    if ( this._opts.collidables.bouncePlanes ) {
+        for (var i = 0 ; i < this._opts.collidables.bouncePlanes.length ; ++i ) {
+            var plane = this._opts.collidables.bouncePlanes[i].plane;
+            var damping = this._opts.collidables.bouncePlanes[i].damping;
+            Collisions.BouncePlane( particleAttributes, alive, delta_t, plane, damping );
+        }
+    }
+
+    if ( this._opts.collidables.sinkPlanes ) {
+        for (var i = 0 ; i < this._opts.collidables.sinkPlanes.length ; ++i ) {
+            var plane = this._opts.collidables.sinkPlanes[i].plane;
+            Collisions.SinkPlane( particleAttributes, alive, delta_t, plane );
+        }
+    }
+
+    if ( this._opts.collidables.spheres ) {
+        for (var i = 0 ; i < this._opts.collidables.spheres.length ; ++i ) {
+            Collisions.Sphere( particleAttributes, alive, delta_t, this._opts.collidables.spheres[i] );
+        }
+    }
+};
+
+RisingTailFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
+    this.updateLifetimes( particleAttributes, alive, delta_t );
+    this.updateVelocities( particleAttributes, alive, delta_t );
+    this.updatePositions( particleAttributes, alive, delta_t );
+
+    // this.collisions( particleAttributes, alive, delta_t );
+
+    this.updateColors( particleAttributes, alive, delta_t );
+    // this.updateSizes( particleAttributes, alive, delta_t );
+
+    // tell webGL these were updated
+    particleAttributes.position.needsUpdate = true;
+    particleAttributes.color.needsUpdate = true;
+    particleAttributes.velocity.needsUpdate = true;
+    particleAttributes.lifetime.needsUpdate = true;
+    // particleAttributes.size.needsUpdate = true;
+
+};
