@@ -257,9 +257,11 @@ BasicFireworksUpdater.prototype.updateVelocities = function ( particleAttributes
         // now update velocity based on forces...
         
         // Detonate the fireworks at a certain lifetime
-        if (l > explodeLifetime && l - explodeLifetime <= 2 * delta_t) {
-            v = getRandomPointOnUnitSphere();
-            v.multiplyScalar(10);
+        if (l < explodeLifetime) {
+            if (explodeLifetime - l <= delta_t*2) {
+                v = getRandomPointOnUnitSphere();
+                v.multiplyScalar(10);
+            }
         }
          
         setElement( i, velocities, v );
@@ -294,6 +296,7 @@ BasicFireworksUpdater.prototype.updateColors = function ( particleAttributes, al
             c.w = 1; // Make the fireworks transparent before going kaboom!
         }
         setElement( i, colors, c );
+
     }
 };
 
@@ -722,6 +725,176 @@ StrobeFireworksUpdater.prototype.collisions = function ( particleAttributes, ali
 };
 
 StrobeFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
+    this.updateLifetimes( particleAttributes, alive, delta_t );
+    this.updateVelocities( particleAttributes, alive, delta_t );
+    this.updatePositions( particleAttributes, alive, delta_t );
+
+    // this.collisions( particleAttributes, alive, delta_t );
+
+    this.updateColors( particleAttributes, alive, delta_t );
+    // this.updateSizes( particleAttributes, alive, delta_t );
+
+    // tell webGL these were updated
+    particleAttributes.position.needsUpdate = true;
+    particleAttributes.color.needsUpdate = true;
+    particleAttributes.velocity.needsUpdate = true;
+    particleAttributes.lifetime.needsUpdate = true;
+    // particleAttributes.size.needsUpdate = true;
+
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Cross Firework Updater
+////////////////////////////////////////////////////////////////////////////////
+
+function CrossFireworksUpdater ( opts ) {
+    this._opts = opts;
+    return this;
+};
+
+
+CrossFireworksUpdater.prototype.updatePositions = function ( particleAttributes, alive, delta_t ) {
+    var positions  = particleAttributes.position;
+    var velocities = particleAttributes.velocity;
+
+    for ( var i  = 0 ; i < alive.length ; ++i ) {
+        if ( !alive[i] ) continue;
+        var p = getElement( i, positions );
+        var v = getElement( i, velocities );
+        p.add( v.clone().multiplyScalar( delta_t ) );
+        setElement( i, positions, p );
+    }
+};
+
+CrossFireworksUpdater.prototype.updateVelocities = function ( particleAttributes, alive, delta_t ) {
+    var positions = particleAttributes.position;
+    var velocities = particleAttributes.velocity;
+    var gravity = this._opts.externalForces.gravity;
+    var attractors = this._opts.externalForces.attractors;
+    var dampenings = particleAttributes.dampening;
+    var lifetimes     = particleAttributes.lifetime;
+    let explodeLifetime = this._opts.explodeLifetime;
+
+    // Uncomment this to debug the audio feature
+    // let life = getElement(0, lifetimes);
+    // if (life > explodeLifetime && life - explodeLifetime <= 2 * delta_t) {
+    //     Renderer._sound.play();
+    // }
+
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+        if ( !alive[i] ) continue;
+        // ----------- STUDENT CODE BEGIN ------------
+        var p = getElement( i, positions );
+        var v = getElement( i, velocities );
+        let l = getElement(i, lifetimes);
+        // now update velocity based on forces...
+        
+        // Detonate the fireworks at a certain lifetime
+        if (l < explodeLifetime) {
+            if (explodeLifetime - l <= delta_t*2) {
+                v = getRandomPointOnCross();
+                v.multiplyScalar(10);
+            }
+        }
+         
+        setElement( i, velocities, v );
+        // ----------- STUDENT CODE END ------------
+    }
+
+};
+
+CrossFireworksUpdater.prototype.updateColors = function ( particleAttributes, alive, delta_t ) {
+    var colors    = particleAttributes.color;
+    let baseColor = this._opts.originalColor;
+    let lifetimes     = particleAttributes.lifetime;
+    
+    let brightnessFactor = 1;
+    if (baseColor.x < brightnessFactor && baseColor.x > 0) brightnessFactor = baseColor.x;
+    if (baseColor.y < brightnessFactor && baseColor.y > 0) brightnessFactor = baseColor.y;
+    if (baseColor.z < brightnessFactor && baseColor.z > 0) brightnessFactor = baseColor.z;
+    brightnessFactor = 1 / brightnessFactor;
+
+    let explodeLifetime = this._opts.explodeLifetime;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+        let c = getElement( i, colors );
+        let l = getElement(i, lifetimes);
+        if (l < explodeLifetime) {
+            c = baseColor.clone();
+            c.multiplyScalar(brightnessFactor * (l / explodeLifetime));
+            c.clampScalar(0, 1);
+        } else {
+            c.w = 1; // Make the fireworks transparent before going kaboom!
+        }
+        setElement( i, colors, c );
+
+    }
+};
+
+CrossFireworksUpdater.prototype.updateSizes= function ( particleAttributes, alive, delta_t ) {
+    var sizes    = particleAttributes.size;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+        // ----------- STUDENT CODE BEGIN ------------
+        var s = getElement( i, sizes );
+
+        setElement( i, sizes, s );
+        // ----------- STUDENT CODE END ------------
+    }
+
+};
+
+CrossFireworksUpdater.prototype.updateLifetimes = function ( particleAttributes, alive, delta_t) {
+    var positions     = particleAttributes.position;
+    var lifetimes     = particleAttributes.lifetime;
+
+    for ( var i = 0 ; i < alive.length ; ++i ) {
+
+        if ( !alive[i] ) continue;
+
+        var lifetime = getElement( i, lifetimes );
+
+        if ( lifetime < 0 ) {
+            killParticle( i, particleAttributes, alive );
+        } else {
+            setElement( i, lifetimes, lifetime - delta_t );
+        }
+    }
+
+};
+
+CrossFireworksUpdater.prototype.collisions = function ( particleAttributes, alive, delta_t ) {
+    if ( !this._opts.collidables ) {
+        return;
+    }
+    if ( this._opts.collidables.bouncePlanes ) {
+        for (var i = 0 ; i < this._opts.collidables.bouncePlanes.length ; ++i ) {
+            var plane = this._opts.collidables.bouncePlanes[i].plane;
+            var damping = this._opts.collidables.bouncePlanes[i].damping;
+            Collisions.BouncePlane( particleAttributes, alive, delta_t, plane, damping );
+        }
+    }
+
+    if ( this._opts.collidables.sinkPlanes ) {
+        for (var i = 0 ; i < this._opts.collidables.sinkPlanes.length ; ++i ) {
+            var plane = this._opts.collidables.sinkPlanes[i].plane;
+            Collisions.SinkPlane( particleAttributes, alive, delta_t, plane );
+        }
+    }
+
+    if ( this._opts.collidables.spheres ) {
+        for (var i = 0 ; i < this._opts.collidables.spheres.length ; ++i ) {
+            Collisions.Sphere( particleAttributes, alive, delta_t, this._opts.collidables.spheres[i] );
+        }
+    }
+};
+
+CrossFireworksUpdater.prototype.update = function ( particleAttributes, alive, delta_t ) {
     this.updateLifetimes( particleAttributes, alive, delta_t );
     this.updateVelocities( particleAttributes, alive, delta_t );
     this.updatePositions( particleAttributes, alive, delta_t );

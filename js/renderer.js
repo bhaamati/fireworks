@@ -177,6 +177,11 @@ Renderer.onClick = function( event ) {
             StrobeFireworksInitializer, StrobeFireworksUpdater
         );
     } 
+    else if (Main.currentSystemName === "crossFireworks") {
+        baseSystem = generateGenericSystemConfig(
+            CrossFireworksInitializer, CrossFireworksUpdater
+        );
+    } 
     else {
         return;
     }

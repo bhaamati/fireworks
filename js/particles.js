@@ -16,7 +16,7 @@ ParticleEngine.create = function () {
     this._material       = new THREE.PointCloudMaterial( { size: 15.0,
         map: sprite,
         // alphaTest : 0.5,
-        blending: THREE.NormalBlending, //THREE.AdditiveBlending,
+        blending: THREE.AdditiveBlending, //THREE.AdditiveBlending,
         depthWrite: false,
         transparent: true,
         vertexColors: THREE.VertexColors } );
