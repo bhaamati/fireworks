@@ -10,13 +10,13 @@ var Backgrounds = Backgrounds || {};
 let cubeTextureLoader = new THREE.CubeTextureLoader();
 cubeTextureLoader.setPath( 'textures/cube_maps/' );
 
-let darkCityTexture = cubeTextureLoader.load([
-    'darkcity/darkcity_bk.jpg',
-    'darkcity/darkcity_dn.jpg',
-    'darkcity/darkcity_ft.jpg',
-    'darkcity/darkcity_lf.jpg',
-    'darkcity/darkcity_rt.jpg',
-    'darkcity/darkcity_up.jpg'
+let nebulaTexture = cubeTextureLoader.load([
+    'ame_nebula/purplenebula_bk.tga',
+    'ame_nebula/purplenebula_dn.jpg',
+    'ame_nebula/purplenebula_ft.jpg',
+    'ame_nebula/purplenebula_lf.jpg',
+    'ame_nebula/purplenebula_rt.jpg',
+    'ame_nebula/purplenebula_up.jpg'
 ]);
 
 let lmCityTexture = cubeTextureLoader.load([
@@ -41,7 +41,7 @@ let textureLoader = new THREE.TextureLoader();
 let londonEyeTexture = textureLoader.load('images/london_eye.jpg');
 
 Backgrounds.londonEye = londonEyeTexture;
-Backgrounds.darkCity = darkCityTexture;
+Backgrounds.nebula = nebulaTexture;
 Backgrounds.lmCity = lmCityTexture;
 Backgrounds.milkyWay = milkyWayTexture;
 
