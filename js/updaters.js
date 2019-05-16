@@ -403,15 +403,17 @@ RisingTailFireworksUpdater.prototype.updatePositions = function ( particleAttrib
 /**
  * @description https://stackoverflow.com/questions/41749411/uniform-sampling-by-volume-within-a-cone
  */
-function getRandomPointOnSideOfRightCone(height, radius) {
+function getRandomPointOnSideOfCone(height, radius, axisVec) {
     let sampledHeight = height * Math.sqrt(Math.random());
     let sampledRadius = (radius / height) * sampledHeight;
     let sampledTheta = 2 * Math.PI * Math.random();
+
     let v = new THREE.Vector3(
         sampledRadius * Math.cos(sampledTheta), 
         sampledHeight, 
         sampledRadius * Math.sin(sampledTheta)
     );
+
     return v;
 }
 
@@ -442,7 +444,7 @@ RisingTailFireworksUpdater.prototype.updateVelocities = function ( particleAttri
         // Detonate the fireworks at a certain lifetime
         if (l < explodeLifetime) {
             if (explodeLifetime - l <= 2 * delta_t) {
-                v = getRandomPointOnSideOfRightCone(1, 1);
+                v = getRandomPointOnSideOfCone(1, 1, this._opts.targetPosition);
                 v.multiplyScalar(10);
             } else {
                 v.y += dragComponent;

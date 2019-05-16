@@ -5,6 +5,46 @@
 // three.js scene, that will be used in main.js
 
 "use strict";
+
+var Backgrounds = Backgrounds || {};
+let cubeTextureLoader = new THREE.CubeTextureLoader();
+cubeTextureLoader.setPath( 'textures/cube_maps/' );
+
+let nebulaTexture = cubeTextureLoader.load([
+    'ame_nebula/purplenebula_bk.tga',
+    'ame_nebula/purplenebula_dn.tga',
+    'ame_nebula/purplenebula_ft.tga',
+    'ame_nebula/purplenebula_lf.tga',
+    'ame_nebula/purplenebula_rt.tga',
+    'ame_nebula/purplenebula_up.tga'
+]);
+
+let lmCityTexture = cubeTextureLoader.load([
+    'mnight/mnight_bk.tga',
+    'mnight/mnight_dn.tga',
+    'mnight/mnight_ft.tga',
+    'mnight/mnight_lf.tga',
+    'mnight/mnight_rt.tga',
+    'mnight/mnight_up.tga'
+]);
+
+let milkyWayTexture = cubeTextureLoader.load([
+    '/milky_way/dark-s_px.jpg',
+    '/milky_way/dark-s_nx.jpg',
+    '/milky_way/dark-s_py.jpg',
+    '/milky_way/dark-s_ny.jpg',
+    '/milky_way/dark-s_pz.jpg',
+    '/milky_way/dark-s_nz.jpg'
+]);
+
+let textureLoader = new THREE.TextureLoader();
+let londonEyeTexture = textureLoader.load('images/london_eye.jpg');
+
+Backgrounds.londonEye = londonEyeTexture;
+Backgrounds.nebula = nebulaTexture;
+Backgrounds.lmCity = lmCityTexture;
+Backgrounds.milkyWay = milkyWayTexture;
+
 var Scene = Scene || {
     _scene     : undefined,
     _materials : [],
@@ -19,6 +59,7 @@ Scene.create = function () {
     Scene._scene  = new THREE.Scene();
     Scene.setupLighting();
     Scene.setupMaterials();
+    Scene._scene.background = londonEyeTexture;
 };
 
 // Lights

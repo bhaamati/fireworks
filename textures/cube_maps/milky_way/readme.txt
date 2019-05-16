@@ -1,0 +1,1 @@
+* Obtained from https://github.com/mrdoob/three.js/tree/master/examples/textures/cube/MilkyWay

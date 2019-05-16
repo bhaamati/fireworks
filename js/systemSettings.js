@@ -18,7 +18,7 @@ SystemSettings.standardMaterial = new THREE.ShaderMaterial( {
     vertexShader:   document.getElementById( 'vertexShader' ).textContent,
     fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
 
-    blending:    Gui.values.blendTypes,
+    blending:    THREE.AdditiveBlending,
     transparent: Gui.values.transparent,
     depthTest:   Gui.values.depthTest,
 
@@ -377,6 +377,10 @@ SystemSettings.basic = {
 // };
 
 ////////////////////////////////////////////////////////////////////////////////
+// My Textures
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 // My System
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -396,36 +400,8 @@ SystemSettings.crossFireworks = generateGenericSystemConfig(
     CrossFireworksInitializer, CrossFireworksUpdater, "crossFireworks"
 );
 
-function genericPlaneScene() {
+function genericPlaneScene() {}
 
-    var plane_geo = new THREE.PlaneBufferGeometry( 1000, 1000, 1, 1 );
-    var phong     = new THREE.MeshPhongMaterial({
-        color: 0x444444, emissive: 0x222222, side: THREE.DoubleSide
-    });
-
-    var plane     = new THREE.Mesh( plane_geo, phong );
-    plane.rotation.x = -1.57;
-    plane.position.y = 0;
-
-    // Scene.addObject( plane );
-
-    // instantiate a loader
-    // var loader = new THREE.CubeTextureLoader();
-    // loader.setPath( 'textures/cube_maps/darkcity/' );
-
-    // var texture = loader.load([
-    //     'darkcity_bk.jpg',
-    //     'darkcity_dn.jpg',
-    //     'darkcity_ft.jpg',
-    //     'darkcity_lf.jpg',
-    //     'darkcity_rt.jpg',
-    //     'darkcity_up.jpg'
-    // ]);
-
-    let loader = new THREE.TextureLoader();
-    let texture = loader.load('images/london_eye.jpg');
-    Scene._scene.background = texture;
-}
 
 /**
  * @description Return a JSON object that can be used to configure a fireworks 
