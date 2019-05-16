@@ -11,7 +11,7 @@ Gui.windowSizes = [ "full","400x400","600x400","600x600","800x600","800x800" ];
 
 Gui.particleSystems = ["basicFireworks", "risingTailFireworks" ];
 
-Gui.background = ["londonEye", "lmCity", "milkyWay", "nebula"];
+Gui.background = ["londonEye", "milkyWay"];
 
 Gui.textures = [ "blank", "base", "fire", "smoke", "spark", "sphere", "smoke" ];
 

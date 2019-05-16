@@ -12,20 +12,20 @@ cubeTextureLoader.setPath( 'textures/cube_maps/' );
 
 let nebulaTexture = cubeTextureLoader.load([
     'ame_nebula/purplenebula_bk.tga',
-    'ame_nebula/purplenebula_dn.jpg',
-    'ame_nebula/purplenebula_ft.jpg',
-    'ame_nebula/purplenebula_lf.jpg',
-    'ame_nebula/purplenebula_rt.jpg',
-    'ame_nebula/purplenebula_up.jpg'
+    'ame_nebula/purplenebula_dn.tga',
+    'ame_nebula/purplenebula_ft.tga',
+    'ame_nebula/purplenebula_lf.tga',
+    'ame_nebula/purplenebula_rt.tga',
+    'ame_nebula/purplenebula_up.tga'
 ]);
 
 let lmCityTexture = cubeTextureLoader.load([
-    'lmcity/lmcity_bk.tga',
-    'lmcity/lmcity_dn.tga',
-    'lmcity/lmcity_ft.tga',
-    'lmcity/lmcity_lf.tga',
-    'lmcity/lmcity_rt.tga',
-    'lmcity/lmcity_up.tga'
+    'mnight/mnight_bk.tga',
+    'mnight/mnight_dn.tga',
+    'mnight/mnight_ft.tga',
+    'mnight/mnight_lf.tga',
+    'mnight/mnight_rt.tga',
+    'mnight/mnight_up.tga'
 ]);
 
 let milkyWayTexture = cubeTextureLoader.load([
