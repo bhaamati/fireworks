@@ -9,7 +9,9 @@ Gui.windowSizes = [ "full","400x400","600x400","600x600","800x600","800x800" ];
 
 // Gui.blendTypes = [ "Normal", "Additive" ];
 
-Gui.particleSystems = [ "basic", "basicFireworks", "risingTailFireworks" ];
+Gui.particleSystems = ["basicFireworks", "risingTailFireworks" ];
+
+Gui.background = ["londonEye", "darkCity", "lmCity"];
 
 Gui.textures = [ "blank", "base", "fire", "smoke", "spark", "sphere", "smoke" ];
 
@@ -24,6 +26,7 @@ Gui.values = {
     guiToBatch : function() {},
     // blendTypes:  Gui.blendTypes[0],
     textures:    Gui.textures[0],
+    background: Gui.background[0],
     systems:     Gui.particleSystems[0],
     depthTest:   true,
     transparent: true,
@@ -79,8 +82,9 @@ Gui.init = function ( meshChangeCallback, controlsChangeCallback, displayChangeC
 
     var disp = gui.addFolder( "DISPLAY OPTIONS");
     // gc.blends    = disp.add( Gui.values, 'blendTypes', Gui.blendTypes ).name("Blending Types");
+    gc.background = disp.add(Gui.values, "background", Gui.background).name("Background");
     gc.textures  = disp.add( Gui.values, 'textures', Gui.textures ).name("Textures");
-    gc.fireworkTypes  = disp.add( Gui.values, 'fireworkTypes', Gui.textures ).name("Firework Types");
+    // gc.fireworkTypes  = disp.add( Gui.values, 'fireworkTypes', Gui.textures ).name("Firework Types");
     gc.depthTest = disp.add( Gui.values, 'depthTest' ).name("Depth Test");
     gc.transp    = disp.add( Gui.values, 'transparent' ).name("Transparent");
     gc.sort      = disp.add( Gui.values, 'sorting' ).name("Sorting");
@@ -129,6 +133,12 @@ Gui.init = function ( meshChangeCallback, controlsChangeCallback, displayChangeC
         var emitters = ParticleEngine.getEmitters();
         for ( var i = 0 ; i < emitters.length ; i++ ) {
             emitters[i]._material.depthTest = value;
+        }
+    });
+
+    gc.background.onChange( function( value ) {
+        if (Backgrounds[value]) {
+            Scene._scene.background = Backgrounds[value];
         }
     });
 
