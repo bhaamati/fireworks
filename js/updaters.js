@@ -405,19 +405,11 @@ function getRandomPointOnSideOfCone(height, radius, axisVec) {
     let sampledRadius = (radius / height) * sampledHeight;
     let sampledTheta = 2 * Math.PI * Math.random();
 
-    let axis = axisVec.clone();
-    axis.normalize();
-
     let v = new THREE.Vector3(
         sampledRadius * Math.cos(sampledTheta), 
         sampledHeight, 
         sampledRadius * Math.sin(sampledTheta)
     );
-    
-    let yVec = new THREE.Vector3(0, 1, 0);
-    let rotationAngle = axis.angleTo(yVec);
-
-    v.applyAxisAngle(yVec, rotationAngle);
 
     return v;
 }
