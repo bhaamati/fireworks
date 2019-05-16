@@ -28,12 +28,22 @@ let lmCityTexture = cubeTextureLoader.load([
     'lmcity/lmcity_up.tga'
 ]);
 
+let milkyWayTexture = cubeTextureLoader.load([
+    '/milky_way/dark-s_px.jpg',
+    '/milky_way/dark-s_nx.jpg',
+    '/milky_way/dark-s_py.jpg',
+    '/milky_way/dark-s_ny.jpg',
+    '/milky_way/dark-s_pz.jpg',
+    '/milky_way/dark-s_nz.jpg'
+]);
+
 let textureLoader = new THREE.TextureLoader();
 let londonEyeTexture = textureLoader.load('images/london_eye.jpg');
 
 Backgrounds.londonEye = londonEyeTexture;
 Backgrounds.darkCity = darkCityTexture;
 Backgrounds.lmCity = lmCityTexture;
+Backgrounds.milkyWay = milkyWayTexture;
 
 var Scene = Scene || {
     _scene     : undefined,
