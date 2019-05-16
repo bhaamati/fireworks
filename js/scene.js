@@ -5,6 +5,36 @@
 // three.js scene, that will be used in main.js
 
 "use strict";
+
+var Backgrounds = Backgrounds || {};
+let cubeTextureLoader = new THREE.CubeTextureLoader();
+cubeTextureLoader.setPath( 'textures/cube_maps/' );
+
+let darkCityTexture = cubeTextureLoader.load([
+    'darkcity/darkcity_bk.jpg',
+    'darkcity/darkcity_dn.jpg',
+    'darkcity/darkcity_ft.jpg',
+    'darkcity/darkcity_lf.jpg',
+    'darkcity/darkcity_rt.jpg',
+    'darkcity/darkcity_up.jpg'
+]);
+
+let lmCityTexture = cubeTextureLoader.load([
+    'lmcity/lmcity_bk.tga',
+    'lmcity/lmcity_dn.tga',
+    'lmcity/lmcity_ft.tga',
+    'lmcity/lmcity_lf.tga',
+    'lmcity/lmcity_rt.tga',
+    'lmcity/lmcity_up.tga'
+]);
+
+let textureLoader = new THREE.TextureLoader();
+let londonEyeTexture = textureLoader.load('images/london_eye.jpg');
+
+Backgrounds.londonEye = londonEyeTexture;
+Backgrounds.darkCity = darkCityTexture;
+Backgrounds.lmCity = lmCityTexture;
+
 var Scene = Scene || {
     _scene     : undefined,
     _materials : [],
@@ -19,6 +49,7 @@ Scene.create = function () {
     Scene._scene  = new THREE.Scene();
     Scene.setupLighting();
     Scene.setupMaterials();
+    Scene._scene.background = londonEyeTexture;
 };
 
 // Lights

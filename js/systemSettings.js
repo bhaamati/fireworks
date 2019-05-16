@@ -380,21 +380,6 @@ SystemSettings.basic = {
 // My Textures
 ////////////////////////////////////////////////////////////////////////////////
 
-let cubeTextureLoader = new THREE.CubeTextureLoader();
-cubeTextureLoader.setPath( 'textures/cube_maps/darkcity/' );
-
-let darkCityTexture = cubeTextureLoader.load([
-    'darkcity_bk.jpg',
-    'darkcity_dn.jpg',
-    'darkcity_ft.jpg',
-    'darkcity_lf.jpg',
-    'darkcity_rt.jpg',
-    'darkcity_up.jpg'
-]);
-
-let textureLoader = new THREE.TextureLoader();
-let londonEyeTexture = textureLoader.load('images/london_eye.jpg');
-
 ////////////////////////////////////////////////////////////////////////////////
 // My System
 ////////////////////////////////////////////////////////////////////////////////
@@ -407,9 +392,7 @@ SystemSettings.basicFireworks = generateGenericSystemConfig(
     BasicFireworksInitializer, BasicFireworksUpdater, "basicFireworks"
 );
 
-function genericPlaneScene() {
-    Scene._scene.background = darkCityTexture;
-}
+function genericPlaneScene() {}
 
 /**
  * @description Return a JSON object that can be used to configure a fireworks 
